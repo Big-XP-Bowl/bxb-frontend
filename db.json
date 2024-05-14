@@ -1,0 +1,73 @@
+{
+  "reservations": [
+    {
+      "ID": 1,
+      "user": "Lars Jensen",
+      "email": "lars@example.com",
+      "phoneNumber": "12345678",
+      "activity": "Bowling",
+      "startTime": "2024-05-13T15:00:00",
+      "duration": "2",
+      "date": "2024-05-13",
+      "participants": 4
+    },
+    {
+      "ID": 2,
+      "user": "Mette Nielsen",
+      "email": "mette@example.com",
+      "phoneNumber": "98765432",
+      "activity": "Bowling",
+      "startTime": "2024-05-14T18:30:00",
+      "duration": "1.5",
+      "date": "2024-05-14",
+      "participants": 2
+    }
+  ],
+  "employees": [
+    {
+      "ID": 1,
+      "empType": "USER",
+      "name": "Hans Andersen",
+      "initials": "HA",
+      "shifts": ["Monday", "Tuesday", "Thursday"]
+    },
+    {
+      "ID": 2,
+      "empType": "ADMIN",
+      "name": "Karen Pedersen",
+      "initials": "KP",
+      "shifts": ["Tuesday", "Wednesday", "Friday"]
+    },
+    {
+      "ID": 3,
+      "empType": "MAINTENANCE",
+      "name": "Per Nielsen",
+      "initials": "PN",
+      "shifts": ["Wednesday", "Thursday", "Saturday"]
+    },
+    {
+      "ID": 4,
+      "empType": "BAR",
+      "name": "Mette Hansen",
+      "initials": "MH",
+      "shifts": ["Thursday", "Friday", "Sunday"]
+    }
+  ],
+  "products": [
+    {
+      "ID": 1,
+      "name": "Bowling Shoe Rental",
+      "price": 30
+    },
+    {
+      "ID": 2,
+      "name": "Large Soda",
+      "price": 20
+    },
+    {
+      "ID": 3,
+      "name": "Nachos",
+      "price": 40
+    }
+  ]
+}
