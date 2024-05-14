@@ -1,4 +1,4 @@
-[![Azure Static Web Apps CI/CD](https://github.com/Big-XP-Bowl/bxb-frontend/actions/workflows/azure-static-web-apps-blue-forest-07a1e5103.yml/badge.svg)](https://github.com/Big-XP-Bowl/bxb-frontend/actions/workflows/azure-static-web-apps-blue-forest-07a1e5103.yml)
+[![Azure Static Web Apps CI/CD](https://github.com/Big-XP-Bowl/bxb-frontend/actions/workflows/azure-static-web-apps-blue-forest-07a1e5103.yml/badge.svg)](https://github.com/Big-XP-Bowl/bxb-frontend/actions/workflows/azure-static-web-apps-blue-forest-07a1e5103.yml) 
 
 # React + TypeScript + Vite
 
