@@ -1,4 +1,6 @@
-# React + TypeScript + Vite 
+[![Azure Static Web Apps CI/CD](https://github.com/Big-XP-Bowl/bxb-frontend/actions/workflows/azure-static-web-apps-blue-forest-07a1e5103.yml/badge.svg)](https://github.com/Big-XP-Bowl/bxb-frontend/actions/workflows/azure-static-web-apps-blue-forest-07a1e5103.yml)
+
+# React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
