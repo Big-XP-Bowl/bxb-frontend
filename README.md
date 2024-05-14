@@ -1,7 +1,7 @@
 # React + TypeScript + Vite
 
 at bruge json-server:
-skriv i terminal: json-server --watch db.json
+skriv i terminal (prøv evt yarn ved fejl): json-server --watch db.json
 
 output:
 "Index:
