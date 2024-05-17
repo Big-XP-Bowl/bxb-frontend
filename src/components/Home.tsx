@@ -1,14 +1,18 @@
-import Activities from "./Activities";
+import HERO from "../../public/HERO.mp4";
+import { HeroVideoCard } from "../styles/Cards";
+
 
 const Home = () => {
   return (
     <>
-      <div className="activities-container">
-        <h2>Aktiviteter</h2>
-        <Activities />
-      </div>
+    <HeroVideoCard>
+      <video autoPlay muted loop id="myVideo">
+        <source src={HERO} type="video/mp4" />
+      </video>
+    </HeroVideoCard>
     </>
   );
-};
+}
+
 
 export default Home;
