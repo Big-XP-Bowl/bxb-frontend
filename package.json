@@ -13,8 +13,10 @@
     "json-server": "^1.0.0-beta.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.23.1",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "toast": "^0.5.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
