@@ -19,7 +19,7 @@ function useReservations() {
       if (error instanceof HttpException) {
         toast.error(error.message);
       } else {
-        toast.error('En ');
+        toast.error('En uventet fejl opstod');
       }
     }
   };
@@ -38,11 +38,10 @@ function useReservations() {
       if (error instanceof HttpException) {
         toast.error(error.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error('En uventet fejl opstod');
       }
     }
-  }
-
+  };
 
   return { reservations, isLoading, fetchReservationsByID };
 }
