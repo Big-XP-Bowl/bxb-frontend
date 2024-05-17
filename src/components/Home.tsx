@@ -1,25 +1,32 @@
-import useActivities from "../hooks/useActivities";
-import { Grid1 } from "../styles/Grids";
+import { Card1 } from '../styles/Cards';
+import { Grid2 } from '../styles/Grids';
+import useReservations from '../hooks/useReservations';
 
-export default function Home() {
-  const { activities, isLoading } = useActivities();
+const Home = () => {
+  const { reservations, isLoading } = useReservations();
+
+  console.log(reservations);
 
   return (
-    <div>
-      <h1>Home</h1>
-      <Grid1>
-        {/* i wish to get activities and render them here */}
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          activities.map((activity) => (
-            <div key={activity.id}>
-              <h2>{activity.name}</h2>
-              <p>{activity.description}</p>
-            </div>
-          ))
-        )}
-      </Grid1>
-    </div>
+    <>
+    <h2>Reservationer</h2>
+    <Grid2>
+      {isLoading && <p>Loading...</p>}
+      {reservations.map((reservation) => {
+        return (
+          <Card1 key={reservation.id}>
+            <h2>{reservation.id}</h2>
+            <p>{reservation.startTime}</p>
+            <p>{reservation.partySize}</p>
+            <p>{reservation.customerName}</p>
+            <p>{reservation.customerPhone}</p>
+          </Card1>
+        );
+      })}
+    </Grid2>
+    
+    </>
   );
 }
+
+export default Home;
