@@ -19,7 +19,7 @@ function useReservations() {
       if (error instanceof HttpException) {
         toast.error(error.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error('En ');
       }
     }
   };
@@ -44,7 +44,7 @@ function useReservations() {
   }
 
 
-  return { reservations, isLoading, fetchReservations, fetchReservationsByID };
+  return { reservations, isLoading, fetchReservationsByID };
 }
 
 export default useReservations;
