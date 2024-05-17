@@ -31,13 +31,40 @@ export function makeOptions(
  * Utility Method to handle http-errors returned as a JSON-response with fetch
  * Meant to be used in the first .then() clause after a fetch-call
  */
+export class HttpException extends Error {
+  public status: number;
+  constructor(message: string, status?: number) {
+    super(message);
+    this.status = status || 500;
+  }
+}
+
 export async function handleHttpErrors(res: Response) {
   if (!res.ok) {
     const errorResponse = await res.json();
-    const msg = errorResponse.message
+    let msg = errorResponse.message
       ? errorResponse.message
-      : "No details provided";
-    throw new Error(msg);
+      : "Uventet fejl opstod";
+    if (res.status === 400) {
+      msg = "Der opstod en fejl i din forespørgsel. Prøv venligst igen.";
+    }
+    if (res.status === 401) {
+      msg =
+        "Du er ikke logget ind eller din session er udløbet. Log venligst ind igen.";
+    }
+    if (res.status === 403) {
+      msg = "Du har ikke adgang til denne ressource.";
+    }
+    if (res.status === 404) {
+      msg = "Ressourcen blev ikke fundet.";
+    }
+    if (res.status >= 500) {
+      msg = "Der skete en fejl på serveren. Prøv venligst igen senere.";
+    }
+    throw new HttpException(msg, res.status);
+  }
+  if (res.status === 204) {
+    return res;
   }
   return res.json();
 }
