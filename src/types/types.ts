@@ -1,6 +1,6 @@
 interface IReservation {
   id: number;
-  activity: IActivity; 
+  activity: IActivity | IAirhockey | IBowlingLane | IDiningTable; 
   startTime: string; 
   partySize: number;
   userWithRoles: string; 

@@ -44,7 +44,28 @@ function useReservations() {
   }
 
 
-  return { reservations, isLoading, fetchReservations, fetchReservationsByID };
+  const createReservation = async (reservation: IReservation) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reservation),
+      };
+      const res = await fetch(RESERVATIONURL + '/create', options);
+      const data = await handleHttpErrors(res);
+      setReservations(data);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        toast.error(error.message);
+      } else {
+        toast.error('En uventet fejl opstod');
+      }
+    }
+  };
+
+  return { reservations, isLoading, fetchReservationsByID, createReservation };
 }
 
 export default useReservations;

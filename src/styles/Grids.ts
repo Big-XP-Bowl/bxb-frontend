@@ -49,5 +49,11 @@ const Grid2 = styled.div`
   ${lg}
 `;
 
+const GridTop = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  gap: 1rem;
+  `;
 
-export { Grid1, Grid2 };
+export { Grid1, Grid2, GridTop };
