@@ -16,7 +16,17 @@ const Reservations = () => {
   const [modalContent, setModalContent] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
-  const [formData, setFormData] = useState<IReservation | null>(null);
+  const [formData, setFormData] = useState<IReservation>({
+    id: 0,
+    activity: { id: 0, name: '', capacity: 0, isReserved: false, duration: 0, isClosed: false },
+    startTime: '',
+    partySize: 0,
+    userWithRoles: '',
+    customerName: '',
+    customerPhone: '',
+    created: '',
+    edited: '',
+  });
 
   const handleAddFormOpen = () => {
     setShowAddForm(true);
@@ -30,6 +40,7 @@ const Reservations = () => {
   const handleAddReservation = async () => {
     try {
       const newReservation = await createReservation(formData!);
+      console.log("FormData before submission:", formData);
       if (newReservation) {
         setModalContent("Reservation added successfully.");
         setShowModal(true);
@@ -117,7 +128,7 @@ const Reservations = () => {
             <h2>Add Reservation</h2>
             <Form onSubmit={handleAddReservation}>
               <InputContainer>
-              <Label>
+                <Label>
                   Start Tid og Dato:
                   <DatePicker
                     selected={formData ? new Date(formData.startTime) : null!}
@@ -126,6 +137,19 @@ const Reservations = () => {
                     dateFormat="dd/MM/yyyy HH:mm"
                     name="startTime"
                   />
+                </Label>
+                <Label>
+                  Aktivitet:
+                  <select
+                    value={formData?.activity?.id || ''}
+                    name="activity"
+                    onChange={handleFormChange}
+                  >
+                    <option value="">Select Activity</option>
+                    <option value="1">Bowling</option>
+                    <option value="2">Air Hockey</option>
+                    <option value="3">Dining Table</option>
+                  </select>
                 </Label>
                 <Label>
                   Antal Deltagere:
@@ -141,7 +165,7 @@ const Reservations = () => {
                 </Label>
               </InputContainer>
               <ButtonContainer>
-                <button type="submit" onClick={handleAddReservation}>Submit</button>
+                <button type="submit">Submit</button>
                 <button type="button" onClick={handleAddFormClose}>Cancel</button>
               </ButtonContainer>
             </Form>

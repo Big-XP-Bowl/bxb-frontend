@@ -8,6 +8,16 @@ const Card1 = style.div`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   color: #333;
-  `;
+`;
 
-export { Card1 };
+const HeroVideoCard = style.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+`;
+
+export { Card1, HeroVideoCard };

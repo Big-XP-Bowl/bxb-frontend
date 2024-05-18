@@ -19,7 +19,7 @@ function useReservations() {
       if (error instanceof HttpException) {
         toast.error(error.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error('En uventet fejl opstod');
       }
     }
   };
@@ -38,13 +38,12 @@ function useReservations() {
       if (error instanceof HttpException) {
         toast.error(error.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error('En uventet fejl opstod');
       }
     }
-  }
+  };
 
-
-  const createReservation = async (reservation: IReservation) => {
+  const createReservation = async (reservation: Partial<IReservation>) => { // Use Partial<IReservation> to allow incomplete IReservation
     try {
       const options = {
         method: 'POST',
@@ -55,7 +54,8 @@ function useReservations() {
       };
       const res = await fetch(RESERVATIONURL + '/create', options);
       const data = await handleHttpErrors(res);
-      setReservations(data);
+      setReservations(prev => [...prev, data]); // Add the new reservation to the existing state
+      return data;
     } catch (error) {
       if (error instanceof HttpException) {
         toast.error(error.message);
@@ -67,8 +67,8 @@ function useReservations() {
 
   return { reservations, isLoading, fetchReservationsByID, createReservation };
 }
-
 export default useReservations;
+
 
 // THE BACKEND API. TODO: Make costum hook for fetching data from the backend
 // @RestController

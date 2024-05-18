@@ -1,13 +1,11 @@
 interface IReservation {
   id: number;
-  activity: IActivity | IAirhockey | IBowlingLane | IDiningTable; 
+  activityId: number; 
   startTime: string; 
   partySize: number;
-  userWithRoles: string; 
+  userWithRolesUsername: string; 
   customerName: string;
   customerPhone: string;
-  created: string;
-  edited: string;
 }
 
 // Interface for the Activity superclass
