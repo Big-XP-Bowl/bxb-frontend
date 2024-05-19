@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import useActivities from '../hooks/useActivities';
 import useBowlingLanes from '../hooks/useBowlingLanes';
 import useDiningTables from '../hooks/useDiningTables';
 import useAirhockeyTables from '../hooks/useAirhockeyTables';
@@ -12,7 +11,6 @@ import { useAuth } from '../security/AuthProvider'; // Import the useAuth hook
 
 const TestReservations = () => {
   const { username } = useAuth(); // Access the logged-in user's username
-  const { activities } = useActivities();
   const { bowlingLanes, getBowlingLanes } = useBowlingLanes();
   const { diningTables, getDiningTables } = useDiningTables();
   const { airhockeyTables, getAirhockeyTables } = useAirhockeyTables();
@@ -29,6 +27,15 @@ const TestReservations = () => {
 
   const [formData, setFormData] = useState<Partial<IReservation>>(initialFormData);
   const [selectedActivityType, setSelectedActivityType] = useState<string>('');
+  const [activitiesFetched, setActivitiesFetched] = useState<{
+    Airhockey: boolean,
+    DiningTable: boolean,
+    BowlingLane: boolean
+  }>({
+    Airhockey: false,
+    DiningTable: false,
+    BowlingLane: false
+  });
 
   useEffect(() => {
     if (username) {
@@ -40,15 +47,18 @@ const TestReservations = () => {
   }, [username]);
 
   useEffect(() => {
-    // Fetch data based on selected activity type
-    if (selectedActivityType === 'Airhockey') {
+    // Fetch data based on selected activity type, only if not already fetched
+    if (selectedActivityType === 'Airhockey' && !activitiesFetched.Airhockey) {
       getAirhockeyTables();
-    } else if (selectedActivityType === 'DiningTable') {
+      setActivitiesFetched(prev => ({ ...prev, Airhockey: true }));
+    } else if (selectedActivityType === 'DiningTable' && !activitiesFetched.DiningTable) {
       getDiningTables();
-    } else if (selectedActivityType === 'BowlingLane') {
+      setActivitiesFetched(prev => ({ ...prev, DiningTable: true }));
+    } else if (selectedActivityType === 'BowlingLane' && !activitiesFetched.BowlingLane) {
       getBowlingLanes();
+      setActivitiesFetched(prev => ({ ...prev, BowlingLane: true }));
     }
-  }, [selectedActivityType, getAirhockeyTables, getDiningTables, getBowlingLanes]);
+  }, [selectedActivityType, activitiesFetched, getAirhockeyTables, getDiningTables, getBowlingLanes]);
 
   const handleAddReservation = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,6 +70,12 @@ const TestReservations = () => {
       });
       if (newReservation) {
         setFormData(initialFormData);
+        setSelectedActivityType(''); // Reset activity type
+        setActivitiesFetched({
+          Airhockey: false,
+          DiningTable: false,
+          BowlingLane: false
+        }); // Reset fetch state to allow future fetching if needed
       }
     } catch (error) {
       console.error("An error occurred while creating the reservation", error);

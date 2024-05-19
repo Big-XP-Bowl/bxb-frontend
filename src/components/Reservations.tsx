@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPen, FaTrash } from 'react-icons/fa';
 import useReservations from '../hooks/useReservations';
+import useBowlingLanes from '../hooks/useBowlingLanes';
+import useDiningTables from '../hooks/useDiningTables';
+import useAirhockeyTables from '../hooks/useAirhockeyTables';
 import { IReservation } from '../types/types';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; 
+import 'react-datepicker/dist/react-datepicker.css';
+import { useAuth } from '../security/AuthProvider'; 
 
 // Import your styled components for the modal and form
 import { Modal, FormContainer, Form, InputContainer, Label, Input, ButtonContainer } from '../styles/FormLayout.ts';
@@ -12,76 +16,120 @@ import { TableLarge, TableHeader, TableRow, TableData, TableWrapper } from '../s
 
 const Reservations = () => {
   const { reservations, isLoading, createReservation } = useReservations();
+  const { username } = useAuth();
+  const { bowlingLanes, getBowlingLanes } = useBowlingLanes();
+  const { diningTables, getDiningTables } = useDiningTables();
+  const { airhockeyTables, getAirhockeyTables } = useAirhockeyTables();
+  
+  const initialFormData: Partial<IReservation> = {
+    activityId: 0, // Initialize activityID to 0 or a default value
+    startTime: '',
+    partySize: 0,
+    userWithRolesUsername: username || '', // Initialize with the username if available
+    customerName: '',
+    customerPhone: '',
+  };
+
+  const [formData, setFormData] = useState<Partial<IReservation>>(initialFormData);
+  const [selectedActivityType, setSelectedActivityType] = useState<string>('');
+  const [activitiesFetched, setActivitiesFetched] = useState<{
+    Airhockey: boolean,
+    DiningTable: boolean,
+    BowlingLane: boolean
+  }>({
+    Airhockey: false,
+    DiningTable: false,
+    BowlingLane: false
+  });
 
   const [modalContent, setModalContent] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
-  const [formData, setFormData] = useState<IReservation>({
-    id: 0,
-    activity: { id: 0, name: '', capacity: 0, isReserved: false, duration: 0, isClosed: false },
-    startTime: '',
-    partySize: 0,
-    userWithRoles: '',
-    customerName: '',
-    customerPhone: '',
-    created: '',
-    edited: '',
-  });
+
+  useEffect(() => {
+    if (username) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        userWithRolesUsername: username
+      }));
+    }
+  }, [username]);
 
   const handleAddFormOpen = () => {
     setShowAddForm(true);
   };
 
-  const handleAddFormClose = () => {
-    setShowAddForm(false);
-    setFormData(null);
-  };
+  useEffect(() => {
+    // Fetch data based on selected activity type, only if not already fetched
+    if (selectedActivityType === 'Airhockey' && !activitiesFetched.Airhockey) {
+      getAirhockeyTables();
+      setActivitiesFetched(prev => ({ ...prev, Airhockey: true }));
+    } else if (selectedActivityType === 'DiningTable' && !activitiesFetched.DiningTable) {
+      getDiningTables();
+      setActivitiesFetched(prev => ({ ...prev, DiningTable: true }));
+    } else if (selectedActivityType === 'BowlingLane' && !activitiesFetched.BowlingLane) {
+      getBowlingLanes();
+      setActivitiesFetched(prev => ({ ...prev, BowlingLane: true }));
+    }
+  }, [selectedActivityType, activitiesFetched, getAirhockeyTables, getDiningTables, getBowlingLanes]);
 
-  const handleAddReservation = async () => {
+  const handleAddReservation = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      const newReservation = await createReservation(formData!);
-      console.log("FormData before submission:", formData);
+      console.log("FormData before submission:", formData); // Log the formData just before submission
+      const newReservation = await createReservation({
+        ...formData,
+        partySize: parseInt(formData.partySize as unknown as string) // Ensure partySize is a number
+      });
       if (newReservation) {
-        setModalContent("Reservation added successfully.");
-        setShowModal(true);
-        setShowAddForm(false);
-        setFormData(null);
-        // Reload reservations or perform any necessary actions
-      } else {
-        setModalContent("An error occurred while creating the reservation");
-        setShowModal(true);
+        setFormData(initialFormData);
+        setSelectedActivityType(''); // Reset activity type
+        setActivitiesFetched({
+          Airhockey: false,
+          DiningTable: false,
+          BowlingLane: false
+        }); // Reset fetch state to allow future fetching if needed
       }
     } catch (error) {
       console.error("An error occurred while creating the reservation", error);
     }
   };
 
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState: IReservation | null) => ({
-      id: 0,
-      activity: { id: 0, name: '', capacity: 0, isReserved: false, duration: 0, isClosed: false },
-      startTime: '',
-      partySize: 0,
-      userWithRoles: '',
-      customerName: '',
-      customerPhone: '',
-      created: '',
-      edited: '',
+    if (name === 'activityType') {
+      setSelectedActivityType(value);
+    }
+    setFormData(prevState => ({
       ...prevState,
-      [name]: value,
+      [name]: name === 'activityId' ? parseInt(value) : value, // Convert value to number for activityID
     }));
   };
 
   const handleDateChange = (date: Date) => {
-    //@ts-ignore
-    setFormData((prevState: IReservation | null) => ({
+    const isoString = date.toISOString();
+    setFormData(prevState => ({
       ...prevState,
-      startTime: date.toISOString(),
+      startTime: isoString,
     }));
   };
 
+  const renderActivityOptions = () => {
+    if (selectedActivityType === 'Airhockey') {
+      return airhockeyTables.map(activity => (
+        <option key={activity.id} value={activity.id}>{activity.name}</option>
+      ));
+    } else if (selectedActivityType === 'DiningTable') {
+      return diningTables.map(activity => (
+        <option key={activity.id} value={activity.id}>{activity.name}</option>
+      ));
+    } else if (selectedActivityType === 'BowlingLane') {
+      return bowlingLanes.map(activity => (
+        <option key={activity.id} value={activity.id}>{activity.name}</option>
+      ));
+    }
+    return null;
+  };
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -124,51 +172,64 @@ const Reservations = () => {
       </TableWrapper>
       {showAddForm && (
         <Modal>
-          <FormContainer>
-            <h2>Add Reservation</h2>
-            <Form onSubmit={handleAddReservation}>
-              <InputContainer>
+        <FormContainer>
+          <h2>Add Reservation</h2>
+          <form onSubmit={handleAddReservation}>
+            <InputContainer>
+              <Label>
+                Start Tid og Dato:
+                <DatePicker
+                  selected={formData.startTime ? new Date(formData.startTime) : null}
+                  onChange={date => handleDateChange(date)}
+                  showTimeSelect
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  name="startTime"
+                />
+              </Label>
+              <Label>
+                Aktivitet:
+                <select
+                  value={selectedActivityType}
+                  name="activityType"
+                  onChange={handleFormChange}
+                >
+                  <option value="">Select Activity Type</option>
+                  <option value="Airhockey">Airhockey</option>
+                  <option value="DiningTable">Dining Table</option>
+                  <option value="BowlingLane">Bowling Lane</option>
+                </select>
+              </Label>
+              {selectedActivityType && (
                 <Label>
-                  Start Tid og Dato:
-                  <DatePicker
-                    selected={formData ? new Date(formData.startTime) : null!}
-                    onChange={(date) => handleDateChange(date)}
-                    showTimeSelect
-                    dateFormat="dd/MM/yyyy HH:mm"
-                    name="startTime"
-                  />
-                </Label>
-                <Label>
-                  Aktivitet:
+                  Specific Activity:
                   <select
-                    value={formData?.activity?.id || ''}
-                    name="activity"
+                    value={formData.activityId || ''}
+                    name="activityId"
                     onChange={handleFormChange}
                   >
-                    <option value="">Select Activity</option>
-                    <option value="1">Bowling</option>
-                    <option value="2">Air Hockey</option>
-                    <option value="3">Dining Table</option>
+                    <option value="">Select {selectedActivityType}</option>
+                    {renderActivityOptions()}
                   </select>
                 </Label>
-                <Label>
-                  Antal Deltagere:
-                  <Input type="number" name="partySize" value={formData?.partySize || ''} onChange={handleFormChange} />
-                </Label>
-                <Label>
-                  Kunde Navn:
-                  <Input type="text" name="customerName" value={formData?.customerName || ''} onChange={handleFormChange} />
-                </Label>
-                <Label>
-                  Telefon:
-                  <Input type="text" name="customerPhone" value={formData?.customerPhone || ''} onChange={handleFormChange} />
-                </Label>
-              </InputContainer>
-              <ButtonContainer>
-                <button type="submit">Submit</button>
-                <button type="button" onClick={handleAddFormClose}>Cancel</button>
-              </ButtonContainer>
-            </Form>
+              )}
+              <Label>
+                Antal Deltagere:
+                <Input type="number" name="partySize" value={formData.partySize || ''} onChange={handleFormChange} />
+              </Label>
+              <Label>
+                Kunde Navn:
+                <Input type="text" name="customerName" value={formData.customerName || ''} onChange={handleFormChange} />
+              </Label>
+              <Label>
+                Telefon:
+                <Input type="text" name="customerPhone" value={formData.customerPhone || ''} onChange={handleFormChange} />
+              </Label>
+            </InputContainer>
+            <ButtonContainer>
+              <button type="submit">Submit</button>
+              <button onClick={() => setShowAddForm(false)}>Cancel</button>
+            </ButtonContainer>
+          </form>
           </FormContainer>
         </Modal>
       )}
