@@ -1,28 +1,40 @@
+import { useEffect, useState } from "react";
 import useActivities from "../hooks/useActivities";
 import { Grid1 } from "../styles/Grids";
 
 const Activities = () => {
-  const { activities, isLoading } = useActivities();
-  console.log(activities);
+  const { activities } = useActivities();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  return (
-    <div>
-      <h2>AKTIVITETSKOMPONENT</h2>
-      <Grid1>
-        {isLoading && <p>Loader...</p>}
-        {activities.map((activity) => {
-          return (
-            <div key={activity.id}>
-              <h2>{activity.id}</h2>
-              <p>{activity.name}</p>
-              <p>{activity.isReserved}</p>
-              <p>{activity.closed}</p>
-            </div>
-          );
-        })}
-      </Grid1>
-    </div>
-  );
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <h2>Loading...</h2>;
+  } else
+    return (
+      <div>
+        <h2>Alle vores aktiviteter:</h2>
+        <Grid1>
+          {activities.map((activity) => {
+            return (
+              <div key={activity.id}>
+                <h2>{activity.name} </h2>
+                <p>{activity.closed ? "Til reparation" : "Ledigt :)"}</p>
+                <p># of playurz: {activity.capacity}</p>
+                <p>
+                  {" "}
+                  {activity.childFriendly
+                    ? " Børnevenlig"
+                    : " Ikke børnevenlig"}{" "}
+                </p>
+              </div>
+            );
+          })}
+        </Grid1>
+      </div>
+    );
 };
 
 export default Activities;
