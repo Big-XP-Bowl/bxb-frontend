@@ -1,9 +1,9 @@
 interface IReservation {
   id: number;
-  activity: IActivity; 
-  startTime: string; 
+  activity: IActivity;
+  startTime: string;
   partySize: number;
-  userWithRoles: string; 
+  userWithRoles: string;
   customerName: string;
   customerPhone: string;
   created: string;
@@ -17,7 +17,7 @@ interface IActivity {
   capacity: number;
   isReserved: boolean;
   duration: number;
-  isClosed: boolean;
+  closed: boolean;
 }
 
 // Interface for the Airhockey subclass
@@ -28,7 +28,7 @@ interface IAirhockey extends IActivity {
 // Interface for the BowlingLane subclass
 interface IBowlingLane extends IActivity {
   laneNumber: number;
-  isChildFriendly: boolean;
+  childFriendly: boolean;
 }
 
 // Interface for the DiningTable subclass
@@ -36,10 +36,4 @@ interface IDiningTable extends IActivity {
   diningTableNumber: number;
 }
 
-export type {
-  IReservation,
-  IActivity,
-  IAirhockey,
-  IBowlingLane,
-  IDiningTable
-}
+export type { IReservation, IActivity, IAirhockey, IBowlingLane, IDiningTable };

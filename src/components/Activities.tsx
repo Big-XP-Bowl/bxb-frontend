@@ -3,6 +3,7 @@ import { Grid1 } from "../styles/Grids";
 
 const Activities = () => {
   const { activities, isLoading } = useActivities();
+  console.log(activities);
 
   return (
     <div>
@@ -15,7 +16,7 @@ const Activities = () => {
               <h2>{activity.id}</h2>
               <p>{activity.name}</p>
               <p>{activity.isReserved}</p>
-              <p>{activity.isClosed}</p>
+              <p>{activity.closed}</p>
             </div>
           );
         })}
@@ -25,10 +26,3 @@ const Activities = () => {
 };
 
 export default Activities;
-
-//   id: number;
-//   name: string;
-//   capacity: number;
-//   isReserved: boolean;
-//   duration: number;
-//   isClosed: boolean;
