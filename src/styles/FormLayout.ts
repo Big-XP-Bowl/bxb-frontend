@@ -5,7 +5,7 @@ const Modal = styled.div`
   align-items: center;
   top: 20px;
   right: 20px;
-  padding: 10px;
+  padding: 60px;
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   border-radius: 5px;
@@ -39,6 +39,9 @@ const Input = styled.input`
 
 const ButtonContainer = styled.div`
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 `;
 
 const HeaderContainer = styled.div`
