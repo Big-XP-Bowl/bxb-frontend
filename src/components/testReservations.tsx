@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import useActivities from '../hooks/useActivities';
+import useBowlingLanes from '../hooks/useBowlingLanes';
+import useDiningTables from '../hooks/useDiningTables';
+import useAirhockeyTables from '../hooks/useAirhockeyTables';
 import useReservations from '../hooks/useReservations';
 import { IReservation } from '../types/types';
 import DatePicker from 'react-datepicker';
@@ -8,10 +12,14 @@ import { useAuth } from '../security/AuthProvider'; // Import the useAuth hook
 
 const TestReservations = () => {
   const { username } = useAuth(); // Access the logged-in user's username
+  const { activities } = useActivities();
+  const { bowlingLanes, getBowlingLanes } = useBowlingLanes();
+  const { diningTables, getDiningTables } = useDiningTables();
+  const { airhockeyTables, getAirhockeyTables } = useAirhockeyTables();
   const { createReservation } = useReservations();
 
   const initialFormData: Partial<IReservation> = {
-    activityId: 0, // Initialize activityId to 0 or a default value
+    activityId: 0, // Initialize activityID to 0 or a default value
     startTime: '',
     partySize: 0,
     userWithRolesUsername: username || '', // Initialize with the username if available
@@ -20,6 +28,7 @@ const TestReservations = () => {
   };
 
   const [formData, setFormData] = useState<Partial<IReservation>>(initialFormData);
+  const [selectedActivityType, setSelectedActivityType] = useState<string>('');
 
   useEffect(() => {
     if (username) {
@@ -29,6 +38,17 @@ const TestReservations = () => {
       }));
     }
   }, [username]);
+
+  useEffect(() => {
+    // Fetch data based on selected activity type
+    if (selectedActivityType === 'Airhockey') {
+      getAirhockeyTables();
+    } else if (selectedActivityType === 'DiningTable') {
+      getDiningTables();
+    } else if (selectedActivityType === 'BowlingLane') {
+      getBowlingLanes();
+    }
+  }, [selectedActivityType, getAirhockeyTables, getDiningTables, getBowlingLanes]);
 
   const handleAddReservation = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,18 +68,38 @@ const TestReservations = () => {
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === 'activityType') {
+      setSelectedActivityType(value);
+    }
     setFormData(prevState => ({
       ...prevState,
-      [name]: name === 'activityId' ? parseInt(value) : value, // Convert value to number for activityId
+      [name]: name === 'activityId' ? parseInt(value) : value, // Convert value to number for activityID
     }));
   };
-  
+
   const handleDateChange = (date: Date) => {
     const isoString = date.toISOString();
     setFormData(prevState => ({
       ...prevState,
       startTime: isoString,
     }));
+  };
+
+  const renderActivityOptions = () => {
+    if (selectedActivityType === 'Airhockey') {
+      return airhockeyTables.map(activity => (
+        <option key={activity.id} value={activity.id}>{activity.name}</option>
+      ));
+    } else if (selectedActivityType === 'DiningTable') {
+      return diningTables.map(activity => (
+        <option key={activity.id} value={activity.id}>{activity.name}</option>
+      ));
+    } else if (selectedActivityType === 'BowlingLane') {
+      return bowlingLanes.map(activity => (
+        <option key={activity.id} value={activity.id}>{activity.name}</option>
+      ));
+    }
+    return null;
   };
 
   return (
@@ -80,16 +120,29 @@ const TestReservations = () => {
           <Label>
             Aktivitet:
             <select
-              value={formData.activityId || ''}
-              name="activityId"
+              value={selectedActivityType}
+              name="activityType"
               onChange={handleFormChange}
             >
-              <option value="">Select Activity</option>
-              <option value="1">Bowling</option>
-              <option value="2">Air Hockey</option>
-              <option value="3">Dining Table</option>
+              <option value="">Select Activity Type</option>
+              <option value="Airhockey">Airhockey</option>
+              <option value="DiningTable">Dining Table</option>
+              <option value="BowlingLane">Bowling Lane</option>
             </select>
           </Label>
+          {selectedActivityType && (
+            <Label>
+              Specific Activity:
+              <select
+                value={formData.activityId || ''}
+                name="activityId"
+                onChange={handleFormChange}
+              >
+                <option value="">Select {selectedActivityType}</option>
+                {renderActivityOptions()}
+              </select>
+            </Label>
+          )}
           <Label>
             Antal Deltagere:
             <input type="number" name="partySize" value={formData.partySize || ''} onChange={handleFormChange} />

@@ -16,6 +16,7 @@ interface IActivity {
   isReserved: boolean;
   duration: number;
   isClosed: boolean;
+  dtype: string;
 }
 
 // Interface for the Airhockey subclass
