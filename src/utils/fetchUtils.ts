@@ -21,7 +21,7 @@ export function makeOptions(
     opts.body = JSON.stringify(body);
   }
   if (addToken) {
-    //@ts-ignore
+    //@ts-expect-error - localStorage.getItem("token") can be null
     opts.headers["Authorization"] = "Bearer " + localStorage.getItem("token");
   }
   return opts;

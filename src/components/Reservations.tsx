@@ -24,10 +24,10 @@ const Reservations = () => {
   const { airhockeyTables, getAirhockeyTables } = useAirhockeyTables();
   
   const initialFormData: Partial<IReservation> = {
-    activityId: 0, // Initialize activityID to 0 or a default value
+    activityId: 0, 
     startTime: '',
     partySize: 0,
-    userWithRolesUsername: username || '', // Initialize with the username if available
+    userWithRolesUsername: username || '',
     customerName: '',
     customerPhone: '',
   };
@@ -63,7 +63,6 @@ const Reservations = () => {
   const handleUpdateReservation = async (reservation: IReservation) => {
     setFormData(reservation);
   
-    // Fetch the corresponding activity based on the activityId
     try {
       const activity = await fetchActivityById(reservation.activityId);
       if (activity) {
@@ -79,7 +78,7 @@ const Reservations = () => {
   const handleFormUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await updateReservation(formData.id, formData); // Call updateReservation function with reservation ID and updated data
+      await updateReservation(formData.id, formData);
       setFormData(initialFormData);
       setShowAddForm(false);
     } catch (error) {
@@ -131,7 +130,7 @@ const Reservations = () => {
           Airhockey: false,
           DiningTable: false,
           BowlingLane: false
-        }); // Reset fetch state to allow future fetching if needed
+        });
       }
     } catch (error) {
       console.error("An error occurred while creating the reservation", error);
