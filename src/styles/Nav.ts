@@ -10,6 +10,12 @@ const Nav = styled.div`
   z-index: 1000;
   margin: 0;
 
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   ul {
     list-style-type: none;
     display: flex;
