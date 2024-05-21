@@ -10,8 +10,10 @@ import Maintenance from './components/Maintenance';
 import Products from './components/Products';
 import Reservations from './components/Reservations';
 import Schedule from './components/Schedule';
+import TestReservations from './components/TestReservations';
 import Login from './security/Login';
 import { Route, Routes } from 'react-router-dom'
+
 
 // make routes here!
 
@@ -29,6 +31,7 @@ function App() {
       {/* ruter til admin visning */}
       <Route path="/activities" element={<Activities />} />
       <Route path="/reservations" element={<Reservations />} />
+      <Route path="/test-reservations" element={<TestReservations />} />
       <Route path="/products" element={<Products />} />
       <Route path="/employees" element={<Employees />} />
       <Route path="/schedule" element={<Schedule />} />

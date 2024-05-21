@@ -28,5 +28,5 @@ export default function useBowlingLanes() {
     getDiningTables().then(() => setIsLoading(false));
   }, []);
 
-  return { diningTables, getDiningTables };
+  return { isLoading, diningTables, getDiningTables };
 }

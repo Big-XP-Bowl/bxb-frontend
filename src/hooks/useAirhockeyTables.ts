@@ -28,5 +28,5 @@ export default function useBowlingLanes() {
     getAirhockeyTables().then(() => setIsLoading(false));
   }, []);
 
-  return { airhockeyTables, getAirhockeyTables };
+  return { isLoading, airhockeyTables, getAirhockeyTables };
 }
