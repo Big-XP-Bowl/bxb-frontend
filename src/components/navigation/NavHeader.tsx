@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../security/AuthProvider";
 import Nav from "../../styles/Nav";
+import { FaBowlingBall } from "react-icons/fa";
 
 export default function NavHeader() {
   const auth = useAuth();
@@ -8,10 +9,10 @@ export default function NavHeader() {
   return (
     <Nav>
       <nav>
+        <NavLink to="/" style={{ padding: "1rem" }}>
+          <FaBowlingBall size={24} color="#f9abab" />
+        </NavLink>
         <ul>
-          <li>
-            <NavLink to="/">Home</NavLink>
-          </li>
           <li>
             <NavLink to="/bowling">Bowling</NavLink>
           </li>

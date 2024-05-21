@@ -12,7 +12,7 @@ import Layout from "./components/navigation/Layout";
 import Products from "./components/Products";
 import Reservations from "./components/Reservations";
 import Schedule from "./components/Schedule";
-import TestReservations from "./components/TestReservations";
+import TestReservations from "./components/testReservations";
 import Login from "./security/Login";
 import { Route, Routes } from "react-router-dom";
 

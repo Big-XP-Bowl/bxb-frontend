@@ -1,47 +1,67 @@
-import { useState, useEffect } from 'react';
-import { FaPen, FaTrash } from 'react-icons/fa';
-import useReservations from '../hooks/useReservations';
-import useBowlingLanes from '../hooks/useBowlingLanes';
-import useDiningTables from '../hooks/useDiningTables';
-import useAirhockeyTables from '../hooks/useAirhockeyTables';
-import useActivities from '../hooks/useActivities.ts';
-import { IReservation } from '../types/types';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useAuth } from '../security/AuthProvider'; 
+import { useState, useEffect } from "react";
+import { FaPen, FaTrash } from "react-icons/fa";
+import useReservations from "../hooks/useReservations";
+import useBowlingLanes from "../hooks/useBowlingLanes";
+import useDiningTables from "../hooks/useDiningTables";
+import useAirhockeyTables from "../hooks/useAirhockeyTables";
+import useActivities from "../hooks/useActivities.ts";
+import { IReservation } from "../types/types";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useAuth } from "../security/AuthProvider";
 
-import { Modal, FormContainer, InputContainer, Label, Input, ButtonContainer } from '../styles/FormLayout.ts';
-import { GridTop } from '../styles/Grids.ts';
-import { TableLarge, TableHeader, TableRow, TableData, TableWrapper } from '../styles/Tables.ts';
-import ActivityTypeRenderer from '../utils/activityTypeRenderer.tsx';
+import {
+  Modal,
+  FormContainer,
+  InputContainer,
+  Label,
+  Input,
+  ButtonContainer,
+} from "../styles/FormLayout.ts";
+import { GridTop } from "../styles/Grids.ts";
+import {
+  TableLarge,
+  TableHeader,
+  TableRow,
+  TableData,
+  TableWrapper,
+} from "../styles/Tables.ts";
+import ActivityTypeRenderer from "../utils/activityTypeRenderer.tsx";
 
 const Reservations = () => {
-  const { reservations, isLoading, createReservation, updateReservation, deleteReservation } = useReservations();
+  const {
+    reservations,
+    isLoading,
+    createReservation,
+    updateReservation,
+    deleteReservation,
+  } = useReservations();
   const { fetchActivityById } = useActivities();
   const { username } = useAuth();
   const { bowlingLanes, getBowlingLanes } = useBowlingLanes();
   const { diningTables, getDiningTables } = useDiningTables();
   const { airhockeyTables, getAirhockeyTables } = useAirhockeyTables();
-  
+
   const initialFormData: Partial<IReservation> = {
-    activityId: 0, 
-    startTime: '',
+    activityId: 0,
+    startTime: "",
     partySize: 0,
-    userWithRolesUsername: username || '',
-    customerName: '',
-    customerPhone: '',
+    userWithRolesUsername: username || "",
+    customerName: "",
+    customerPhone: "",
   };
 
-  const [formData, setFormData] = useState<Partial<IReservation>>(initialFormData);
-  const [selectedActivityType, setSelectedActivityType] = useState<string>('');
+  const [formData, setFormData] =
+    useState<Partial<IReservation>>(initialFormData);
+  const [selectedActivityType, setSelectedActivityType] = useState<string>("");
   const [activitiesFetched, setActivitiesFetched] = useState<{
-    Airhockey: boolean,
-    DiningTable: boolean,
-    BowlingLane: boolean
+    Airhockey: boolean;
+    DiningTable: boolean;
+    BowlingLane: boolean;
   }>({
     Airhockey: false,
     DiningTable: false,
-    BowlingLane: false
+    BowlingLane: false,
   });
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -49,9 +69,9 @@ const Reservations = () => {
 
   useEffect(() => {
     if (username) {
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
-        userWithRolesUsername: username
+        userWithRolesUsername: username,
       }));
     }
   }, [username]);
@@ -62,7 +82,7 @@ const Reservations = () => {
 
   const handleUpdateReservation = async (reservation: IReservation) => {
     setFormData(reservation);
-  
+
     try {
       const activity = await fetchActivityById(reservation.activityId);
       if (activity) {
@@ -71,9 +91,9 @@ const Reservations = () => {
     } catch (error) {
       console.error("An error occurred while fetching activity details", error);
     }
-  
+
     setShowAddForm(true);
-};
+  };
 
   const handleFormUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -103,17 +123,29 @@ const Reservations = () => {
 
   useEffect(() => {
     // Fetch data based on selected activity type, only if not already fetched
-    if (selectedActivityType === 'Airhockey' && !activitiesFetched.Airhockey) {
+    if (selectedActivityType === "Airhockey" && !activitiesFetched.Airhockey) {
       getAirhockeyTables();
-      setActivitiesFetched(prev => ({ ...prev, Airhockey: true }));
-    } else if (selectedActivityType === 'DiningTable' && !activitiesFetched.DiningTable) {
+      setActivitiesFetched((prev) => ({ ...prev, Airhockey: true }));
+    } else if (
+      selectedActivityType === "DiningTable" &&
+      !activitiesFetched.DiningTable
+    ) {
       getDiningTables();
-      setActivitiesFetched(prev => ({ ...prev, DiningTable: true }));
-    } else if (selectedActivityType === 'BowlingLane' && !activitiesFetched.BowlingLane) {
+      setActivitiesFetched((prev) => ({ ...prev, DiningTable: true }));
+    } else if (
+      selectedActivityType === "BowlingLane" &&
+      !activitiesFetched.BowlingLane
+    ) {
       getBowlingLanes();
-      setActivitiesFetched(prev => ({ ...prev, BowlingLane: true }));
+      setActivitiesFetched((prev) => ({ ...prev, BowlingLane: true }));
     }
-  }, [selectedActivityType, activitiesFetched, getAirhockeyTables, getDiningTables, getBowlingLanes]);
+  }, [
+    selectedActivityType,
+    activitiesFetched,
+    getAirhockeyTables,
+    getDiningTables,
+    getBowlingLanes,
+  ]);
 
   const handleAddReservation = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -121,15 +153,15 @@ const Reservations = () => {
       // console.log("FormData before submission:", formData); // Log the formData just before submission
       const newReservation = await createReservation({
         ...formData,
-        partySize: parseInt(formData.partySize as unknown as string) // Ensure partySize is a number
+        partySize: parseInt(formData.partySize as unknown as string), // Ensure partySize is a number
       });
       if (newReservation) {
         setFormData(initialFormData);
-        setSelectedActivityType(''); // Reset activity type
+        setSelectedActivityType(""); // Reset activity type
         setActivitiesFetched({
           Airhockey: false,
           DiningTable: false,
-          BowlingLane: false
+          BowlingLane: false,
         });
       }
     } catch (error) {
@@ -137,37 +169,45 @@ const Reservations = () => {
     }
   };
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    if (name === 'activityType') {
+    if (name === "activityType") {
       setSelectedActivityType(value);
     }
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: name === 'activityId' ? parseInt(value) : value, // Convert value to number for activityID
+      [name]: name === "activityId" ? parseInt(value) : value, // Convert value to number for activityID
     }));
   };
 
   const handleDateChange = (date: Date) => {
     const isoString = date.toISOString();
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
       startTime: isoString,
     }));
   };
 
   const renderActivityOptions = () => {
-    if (selectedActivityType === 'Airhockey') {
-      return airhockeyTables.map(activity => (
-        <option key={activity.id} value={activity.id}>{activity.name}</option>
+    if (selectedActivityType === "Airhockey") {
+      return airhockeyTables.map((activity) => (
+        <option key={activity.id} value={activity.id}>
+          {activity.name}
+        </option>
       ));
-    } else if (selectedActivityType === 'DiningTable') {
-      return diningTables.map(activity => (
-        <option key={activity.id} value={activity.id}>{activity.name}</option>
+    } else if (selectedActivityType === "DiningTable") {
+      return diningTables.map((activity) => (
+        <option key={activity.id} value={activity.id}>
+          {activity.name}
+        </option>
       ));
-    } else if (selectedActivityType === 'BowlingLane') {
-      return bowlingLanes.map(activity => (
-        <option key={activity.id} value={activity.id}>{activity.name}</option>
+    } else if (selectedActivityType === "BowlingLane") {
+      return bowlingLanes.map((activity) => (
+        <option key={activity.id} value={activity.id}>
+          {activity.name}
+        </option>
       ));
     }
     return null;
@@ -176,7 +216,7 @@ const Reservations = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  
+
   return (
     <>
       <GridTop>
@@ -187,17 +227,21 @@ const Reservations = () => {
         <TableLarge>
           <TableHeader>
             <tr>
-              <th style={{ padding: '8px' }}>ID</th>
-              <th style={{ padding: '8px' }}>Start Tid</th>
-              <th style={{ padding: '8px' }}>Antal Deltagere</th>
-              <th style={{ padding: '8px' }}>Kunde Navn</th>
-              <th style={{ padding: '8px' }}>Telfon</th>
-              <th style={{ padding: '8px' }}>Aktivitet</th>
-              <th style={{ padding: '8px' }}>Handling</th>
+              <th style={{ padding: "8px" }}>ID</th>
+              <th style={{ padding: "8px" }}>Start Tid</th>
+              <th style={{ padding: "8px" }}>Antal Deltagere</th>
+              <th style={{ padding: "8px" }}>Kunde Navn</th>
+              <th style={{ padding: "8px" }}>Telfon</th>
+              <th style={{ padding: "8px" }}>Aktivitet</th>
+              <th style={{ padding: "8px" }}>Handling</th>
             </tr>
           </TableHeader>
           <tbody>
-            {isLoading && <tr><td>Loading...</td></tr>}
+            {isLoading && (
+              <tr>
+                <td>Loading...</td>
+              </tr>
+            )}
             {reservations.map((reservation) => (
               <TableRow key={reservation.id}>
                 <TableData>{reservation.id}</TableData>
@@ -213,11 +257,11 @@ const Reservations = () => {
                 </TableData>
                 <TableData>
                   <FaPen
-                    style={{ marginRight: '5px', cursor: 'pointer' }}
+                    style={{ marginRight: "5px", cursor: "pointer" }}
                     onClick={() => handleUpdateReservation(reservation)}
                   />
                   <FaTrash
-                    style={{ marginRight: '5px', cursor: 'pointer' }}
+                    style={{ marginRight: "5px", cursor: "pointer" }}
                     onClick={() => handleDeleteReservation(reservation)}
                   />
                 </TableData>
@@ -229,14 +273,18 @@ const Reservations = () => {
       {showAddForm && (
         <Modal>
           <FormContainer>
-            <h2>{formData.id ? 'Edit Reservation' : 'Add Reservation'}</h2>
-            <form onSubmit={formData.id ? handleFormUpdate : handleAddReservation}>
+            <h2>{formData.id ? "Edit Reservation" : "Add Reservation"}</h2>
+            <form
+              onSubmit={formData.id ? handleFormUpdate : handleAddReservation}
+            >
               <InputContainer>
                 <Label>
                   Start Tid og Dato:
                   <DatePicker
-                    selected={formData.startTime ? new Date(formData.startTime) : null}
-                    onChange={date => handleDateChange(date)}
+                    selected={
+                      formData.startTime ? new Date(formData.startTime) : null
+                    }
+                    onChange={(date) => handleDateChange(date)}
                     showTimeSelect
                     dateFormat="dd/MM/yyyy HH:mm"
                     name="startTime"
@@ -259,7 +307,7 @@ const Reservations = () => {
                   <Label>
                     Specifikation:
                     <select
-                      value={formData.activityId || ''}
+                      value={formData.activityId || ""}
                       name="activityId"
                       onChange={handleFormChange}
                     >
@@ -270,19 +318,36 @@ const Reservations = () => {
                 )}
                 <Label>
                   Antal Deltagere:
-                  <Input type="number" name="partySize" value={formData.partySize || ''} onChange={handleFormChange} />
+                  <Input
+                    type="number"
+                    name="partySize"
+                    value={formData.partySize || ""}
+                    onChange={handleFormChange}
+                  />
                 </Label>
                 <Label>
                   Kunde Navn:
-                  <Input type="text" name="customerName" value={formData.customerName || ''} onChange={handleFormChange} />
+                  <Input
+                    type="text"
+                    name="customerName"
+                    value={formData.customerName || ""}
+                    onChange={handleFormChange}
+                  />
                 </Label>
                 <Label>
                   Telefon:
-                  <Input type="text" name="customerPhone" value={formData.customerPhone || ''} onChange={handleFormChange} />
+                  <Input
+                    type="text"
+                    name="customerPhone"
+                    value={formData.customerPhone || ""}
+                    onChange={handleFormChange}
+                  />
                 </Label>
               </InputContainer>
               <ButtonContainer>
-                <button type="submit">{formData.id ? 'Update' : 'Submit'}</button>
+                <button type="submit">
+                  {formData.id ? "Update" : "Submit"}
+                </button>
                 <button onClick={() => setShowAddForm(false)}>Cancel</button>
               </ButtonContainer>
             </form>
@@ -306,6 +371,6 @@ const Reservations = () => {
       )}
     </>
   );
-}
+};
 
 export default Reservations;
