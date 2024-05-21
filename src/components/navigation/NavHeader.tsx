@@ -17,9 +17,6 @@ export default function NavHeader() {
             <NavLink to="/activities">Alle aktiviter</NavLink>
           </li>
           <li>
-            <NavLink to="/contact">Contact</NavLink>
-          </li>
-          <li>
             <NavLink to="/about">About</NavLink>
           </li>
           {!auth.isLoggedIn() && (
