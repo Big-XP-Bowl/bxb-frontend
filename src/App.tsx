@@ -10,9 +10,10 @@ import Maintenance from './components/Maintenance';
 import Products from './components/Products';
 import Reservations from './components/Reservations';
 import Schedule from './components/Schedule';
-import TestReservations from './components/testReservations';
+import TestReservations from './components/TestReservations';
 import Login from './security/Login';
 import { Route, Routes } from 'react-router-dom'
+
 
 // make routes here!
 

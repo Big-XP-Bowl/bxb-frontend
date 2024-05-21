@@ -1,183 +1,101 @@
-import { useState, useEffect } from 'react';
-import useBowlingLanes from '../hooks/useBowlingLanes';
-import useDiningTables from '../hooks/useDiningTables';
-import useAirhockeyTables from '../hooks/useAirhockeyTables';
-import useReservations from '../hooks/useReservations';
+import React, { useEffect, useState } from 'react';
+import { Calendar, momentLocalizer, Event } from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import moment from 'moment';
+import useReservations from '../hooks/useReservations'; // Adjust the path as necessary
 import { IReservation } from '../types/types';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { FormContainer, InputContainer, Label, ButtonContainer } from '../styles/FormLayout.ts';
-import { useAuth } from '../security/AuthProvider'; // Import the useAuth hook
+import { Toaster } from 'react-hot-toast';
 
-const TestReservations = () => {
-  const { username } = useAuth(); // Access the logged-in user's username
-  const { bowlingLanes, getBowlingLanes } = useBowlingLanes();
-  const { diningTables, getDiningTables } = useDiningTables();
-  const { airhockeyTables, getAirhockeyTables } = useAirhockeyTables();
-  const { createReservation } = useReservations();
+const localizer = momentLocalizer(moment);
 
-  const initialFormData: Partial<IReservation> = {
-    activityId: 0, // Initialize activityID to 0 or a default value
-    startTime: '',
-    partySize: 0,
-    userWithRolesUsername: username || '', // Initialize with the username if available
-    customerName: '',
-    customerPhone: '',
-  };
-
-  const [formData, setFormData] = useState<Partial<IReservation>>(initialFormData);
-  const [selectedActivityType, setSelectedActivityType] = useState<string>('');
-  const [activitiesFetched, setActivitiesFetched] = useState<{
-    Airhockey: boolean,
-    DiningTable: boolean,
-    BowlingLane: boolean
-  }>({
-    Airhockey: false,
-    DiningTable: false,
-    BowlingLane: false
-  });
+const TestReservations: React.FC = () => {
+  const { reservations, isLoading } = useReservations();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [date, setDate] = useState<Date>(new Date());
 
   useEffect(() => {
-    if (username) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        userWithRolesUsername: username
+    if (!isLoading) {
+      const formattedEvents = reservations.map((reservation: IReservation) => ({
+        title: reservation.customerName,
+        start: new Date(reservation.startTime),
+        end: new Date(new Date(reservation.startTime).getTime() + reservation.partySize * 60000), // Assuming partySize is in minutes
+        id: reservation.id,
       }));
+      setEvents(formattedEvents);
     }
-  }, [username]);
+  }, [reservations, isLoading]);
 
-  useEffect(() => {
-    // Fetch data based on selected activity type, only if not already fetched
-    if (selectedActivityType === 'Airhockey' && !activitiesFetched.Airhockey) {
-      getAirhockeyTables();
-      setActivitiesFetched(prev => ({ ...prev, Airhockey: true }));
-    } else if (selectedActivityType === 'DiningTable' && !activitiesFetched.DiningTable) {
-      getDiningTables();
-      setActivitiesFetched(prev => ({ ...prev, DiningTable: true }));
-    } else if (selectedActivityType === 'BowlingLane' && !activitiesFetched.BowlingLane) {
-      getBowlingLanes();
-      setActivitiesFetched(prev => ({ ...prev, BowlingLane: true }));
-    }
-  }, [selectedActivityType, activitiesFetched, getAirhockeyTables, getDiningTables, getBowlingLanes]);
-
-  const handleAddReservation = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      console.log("FormData before submission:", formData); // Log the formData just before submission
-      const newReservation = await createReservation({
-        ...formData,
-        partySize: parseInt(formData.partySize as unknown as string) // Ensure partySize is a number
-      });
-      if (newReservation) {
-        setFormData(initialFormData);
-        setSelectedActivityType(''); // Reset activity type
-        setActivitiesFetched({
-          Airhockey: false,
-          DiningTable: false,
-          BowlingLane: false
-        }); // Reset fetch state to allow future fetching if needed
-      }
-    } catch (error) {
-      console.error("An error occurred while creating the reservation", error);
-    }
+  // Custom toolbar component to display only the week view and navigation buttons
+  const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: Function }) => {
+    return (
+      <div>
+        <span>{label}</span>
+        <button onClick={() => onNavigate('TODAY')}>Today</button>
+        <button onClick={() => onNavigate('PREV')}>Previous</button>
+        <button onClick={() => onNavigate('NEXT')}>Next</button>
+      </div>
+    );
   };
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    if (name === 'activityType') {
-      setSelectedActivityType(value);
-    }
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: name === 'activityId' ? parseInt(value) : value, // Convert value to number for activityID
-    }));
-  };
-
-  const handleDateChange = (date: Date) => {
-    const isoString = date.toISOString();
-    setFormData(prevState => ({
-      ...prevState,
-      startTime: isoString,
-    }));
-  };
-
-  const renderActivityOptions = () => {
-    if (selectedActivityType === 'Airhockey') {
-      return airhockeyTables.map(activity => (
-        <option key={activity.id} value={activity.id}>{activity.name}</option>
-      ));
-    } else if (selectedActivityType === 'DiningTable') {
-      return diningTables.map(activity => (
-        <option key={activity.id} value={activity.id}>{activity.name}</option>
-      ));
-    } else if (selectedActivityType === 'BowlingLane') {
-      return bowlingLanes.map(activity => (
-        <option key={activity.id} value={activity.id}>{activity.name}</option>
-      ));
-    }
-    return null;
+  // Function to check if an event is within the allowed time range
+  const isEventWithinRange = (event: Event): boolean => {
+    const startHour = moment(event.start).hour();
+    const endHour = moment(event.end).hour();
+    return startHour >= 10 && endHour <= 22;
   };
 
   return (
-    <FormContainer>
-      <h2>Add Reservation</h2>
-      <form onSubmit={handleAddReservation}>
-        <InputContainer>
-          <Label>
-            Start Tid og Dato:
-            <DatePicker
-              selected={formData.startTime ? new Date(formData.startTime) : null}
-              onChange={date => handleDateChange(date)}
-              showTimeSelect
-              dateFormat="dd/MM/yyyy HH:mm"
-              name="startTime"
+    <div>
+      <Toaster />
+      <h1>Reservations Calendar</h1>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500, margin: '50px' }}
+        components={{
+          toolbar: (props: any) => (
+            <CustomToolbar
+              {...props}
+              onNavigate={(action: string) => {
+                if (action === 'PREV') {
+                  const newDate = moment(date).subtract(1, 'week').toDate();
+                  setDate(newDate);
+                  props.onNavigate('DATE', newDate);
+                } else if (action === 'NEXT') {
+                  const newDate = moment(date).add(1, 'week').toDate();
+                  setDate(newDate);
+                  props.onNavigate('DATE', newDate);
+                } else if (action === 'TODAY') {
+                  const newDate = new Date();
+                  setDate(newDate);
+                  props.onNavigate('DATE', newDate);
+                }
+              }}
             />
-          </Label>
-          <Label>
-            Aktivitet:
-            <select
-              value={selectedActivityType}
-              name="activityType"
-              onChange={handleFormChange}
-            >
-              <option value="">Select Activity Type</option>
-              <option value="Airhockey">Airhockey</option>
-              <option value="DiningTable">Dining Table</option>
-              <option value="BowlingLane">Bowling Lane</option>
-            </select>
-          </Label>
-          {selectedActivityType && (
-            <Label>
-              Specific Activity:
-              <select
-                value={formData.activityId || ''}
-                name="activityId"
-                onChange={handleFormChange}
-              >
-                <option value="">Select {selectedActivityType}</option>
-                {renderActivityOptions()}
-              </select>
-            </Label>
-          )}
-          <Label>
-            Antal Deltagere:
-            <input type="number" name="partySize" value={formData.partySize || ''} onChange={handleFormChange} />
-          </Label>
-          <Label>
-            Kunde Navn:
-            <input type="text" name="customerName" value={formData.customerName || ''} onChange={handleFormChange} />
-          </Label>
-          <Label>
-            Telefon:
-            <input type="text" name="customerPhone" value={formData.customerPhone || ''} onChange={handleFormChange} />
-          </Label>
-        </InputContainer>
-        <ButtonContainer>
-          <button type="submit">Submit</button>
-        </ButtonContainer>
-      </form>
-    </FormContainer>
+          ),
+          event: (event: Event, start: Date, end: Date, isSelected: boolean) => {
+            if (!isEventWithinRange(event)) {
+              return null;
+            }
+            return (
+              <div>
+                <div>{event.title}</div>
+                <div>{moment(start).format('HH:mm')} - {moment(end).format('HH:mm')}</div> {/* Display start and end time in 24-hour format */}
+              </div>
+            );
+          },
+        }}
+        views={['week']} // Restricting to only week view
+        defaultView="week" // Setting default view to week
+        date={date} // Setting the current date
+        min={new Date(0, 0, 0, 10, 0)} // Minimum time allowed (10:00 AM)
+        max={new Date(0, 0, 0, 22, 0)} // Maximum time allowed (10:00 PM)
+        formats={{ timeGutterFormat: (date: Date) => moment(date).format('HH:mm') }} // Set time format in the time gutter
+      />
+    </div>
   );
-}
+};
 
 export default TestReservations;
