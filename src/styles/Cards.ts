@@ -1,4 +1,4 @@
-import style from 'styled-components';
+import style from "styled-components";
 
 const Card1 = style.div`
   padding: 1rem;
@@ -12,11 +12,12 @@ const Card1 = style.div`
 
 const HeroVideoCard = style.div`
   position: fixed;
+  background-size: cover;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  z-index: -1;
   overflow: hidden;
 `;
 

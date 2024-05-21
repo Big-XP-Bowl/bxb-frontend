@@ -1,43 +1,48 @@
-import './App.css'
-import Activities from './components/Activities';
-import Airhockey from './components/Airhockey';
-import Bowling from './components/Bowling';
-import Contact from './components/Contact';
-import Dining from './components/Dining';
-import Employees from './components/Employees';
-import Home from './components/Home';
-import Maintenance from './components/Maintenance';
-import Products from './components/Products';
-import Reservations from './components/Reservations';
-import Schedule from './components/Schedule';
-import Login from './security/Login';
-import { Route, Routes } from 'react-router-dom'
+import "./App.css";
+import About from "./components/About";
+import Activities from "./components/Activities";
+import Airhockey from "./components/Airhockey";
+import Bowling from "./components/Bowling";
+import Contact from "./components/Contact";
+import Dining from "./components/Dining";
+import Employees from "./components/Employees";
+import Home from "./components/Home";
+import Maintenance from "./components/Maintenance";
+import Layout from "./components/navigation/Layout";
+import Products from "./components/Products";
+import Reservations from "./components/Reservations";
+import Schedule from "./components/Schedule";
+import Login from "./security/Login";
+import { Route, Routes } from "react-router-dom";
 
 // make routes here!
 
 function App() {
   return (
     <>
-    <Routes>
-      {/* ruter til kunde visning */}
-      <Route path="/" element={<Home />} />
-      <Route path="/bowling" element={<Bowling />} />
-      <Route path="/dining" element={<Dining />} />
-      <Route path="/airhockey" element={<Airhockey />} />
-      <Route path="/contact" element={<Contact />} />
+      <Layout>
+        <Routes>
+          {/* ruter til kunde visning */}
+          <Route path="/" element={<Home />} />
+          <Route path="/bowling" element={<Bowling />} />
+          <Route path="/dining" element={<Dining />} />
+          <Route path="/airhockey" element={<Airhockey />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/About" element={<About />} />
 
-      {/* ruter til admin visning */}
-      <Route path="/activities" element={<Activities />} />
-      <Route path="/reservations" element={<Reservations />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/employees" element={<Employees />} />
-      <Route path="/schedule" element={<Schedule />} />
-      <Route path="/maintenance" element={<Maintenance />} />
+          {/* ruter til admin visning */}
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/reservations" element={<Reservations />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/maintenance" element={<Maintenance />} />
 
-      <Route path="/login" element={<Login />} />
-    </Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Layout>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
