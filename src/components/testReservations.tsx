@@ -75,14 +75,14 @@ const TestReservations: React.FC = () => {
               }}
             />
           ),
-          event: (event: Event, start: Date, end: Date, isSelected: boolean) => {
+          event: ({ event }: { event: Event }) => {
             if (!isEventWithinRange(event)) {
               return null;
             }
             return (
               <div>
                 <div>{event.title}</div>
-                <div>{moment(start).format('HH:mm')} - {moment(end).format('HH:mm')}</div> {/* Display start and end time in 24-hour format */}
+                <div>{moment(event.start).format('HH:mm')} - {moment(event.end).format('HH:mm')}</div> {/* Display start and end time in 24-hour format */}
               </div>
             );
           },

@@ -236,11 +236,12 @@ const Reservations = () => {
                   Start Tid og Dato:
                   <DatePicker
                     selected={formData.startTime ? new Date(formData.startTime) : null}
-                    onChange={date => handleDateChange(date)}
+                    onChange={date => date && handleDateChange(date)} // Ensure date is not null before calling handleDateChange
                     showTimeSelect
                     dateFormat="dd/MM/yyyy HH:mm"
                     name="startTime"
                   />
+
                 </Label>
                 <Label>
                   Aktivitets Type:
