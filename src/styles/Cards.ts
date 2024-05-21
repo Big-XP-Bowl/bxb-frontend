@@ -14,7 +14,7 @@ const HeroVideoCard = styled.div`
   position: fixed;
   left: 0;
   top: 0;
-  width: 101%;
+  width: 100%;
   height: 101%;
   overflow: hidden;
   z-index: -1;
