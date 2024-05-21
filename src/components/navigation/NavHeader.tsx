@@ -14,13 +14,7 @@ export default function NavHeader() {
         </NavLink>
         <ul>
           <li>
-            <NavLink to="/bowling">Bowling</NavLink>
-          </li>
-          <li>
-            <NavLink to="/airhockey">Airhockey</NavLink>
-          </li>
-          <li>
-            <NavLink to="/dining">Diner</NavLink>
+            <NavLink to="/activities">Alle aktiviter</NavLink>
           </li>
           <li>
             <NavLink to="/contact">Contact</NavLink>
