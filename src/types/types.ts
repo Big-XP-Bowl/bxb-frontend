@@ -1,13 +1,11 @@
 interface IReservation {
   id: number;
-  activity: IActivity;
-  startTime: string;
+  activityId: number; 
+  startTime: string; 
   partySize: number;
-  userWithRoles: string;
+  userWithRolesUsername: string; 
   customerName: string;
   customerPhone: string;
-  created: string;
-  edited: string;
 }
 
 // Interface for the Activity superclass
@@ -17,7 +15,8 @@ interface IActivity {
   capacity: number;
   isReserved: boolean;
   duration: number;
-  closed: boolean;
+  isClosed: boolean;
+  dtype: string;
 }
 
 // Interface for the Airhockey subclass

@@ -28,5 +28,5 @@ export default function useBowlingLanes() {
     getBowlingLanes().then(() => setIsLoading(false));
   }, []);
 
-  return { bowlingLanes, getBowlingLanes };
+  return { isLoading, bowlingLanes, getBowlingLanes };
 }
