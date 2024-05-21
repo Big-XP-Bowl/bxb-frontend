@@ -1,4 +1,4 @@
-import style from "styled-components";
+import style, { styled } from "styled-components";
 
 const Card1 = style.div`
   padding: 1rem;
@@ -10,15 +10,25 @@ const Card1 = style.div`
   color: #333;
 `;
 
-const HeroVideoCard = style.div`
+const HeroVideoCard = styled.div`
   position: fixed;
-  background-size: cover;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+  width: 101%;
+  height: 101%;
   overflow: hidden;
+  z-index: -1;
+
+  video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    opacity: 0.85;
+  }
 `;
 
 export { Card1, HeroVideoCard };
