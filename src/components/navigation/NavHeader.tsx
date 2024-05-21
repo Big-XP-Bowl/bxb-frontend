@@ -10,7 +10,7 @@ export default function NavHeader() {
     <Nav>
       <nav>
         <NavLink to="/" style={{ padding: "1rem" }}>
-          <FaBowlingBall size={24} color="#f9abab" />
+          <FaBowlingBall size={35} color="#f9abab" />
         </NavLink>
         <ul>
           <li>
