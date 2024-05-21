@@ -7,7 +7,7 @@ export default function About() {
         behagelige omstændigheder og plads til prima bowling i højsædet
       </p>
       <p>
-        Vi har 24 top-notch baner, som er klar til at tage imod jer, en
+        Vi har 24 top-notchd baner, som er klar til at tage imod jer, en
         restaurant, hvor I kan nyde en lækker middag og airhockeyborde, hvor
         alle aldre kan have det sjovt!
       </p>

@@ -1,5 +1,8 @@
 import HERO from "/HERO.mp4";
-import { HeroVideoCard } from "../styles/Cards";
+import { HeroCard, HeroVideoCard } from "../styles/Cards";
+import Activities from "./Activities";
+import About from "./About";
+import Products from "./Products";
 
 const Home = () => {
   return (
@@ -9,6 +12,12 @@ const Home = () => {
           <source src={HERO} type="video/mp4" />
         </video>
       </HeroVideoCard>
+      <HeroCard></HeroCard>
+      <Products />
+      <HeroCard>
+        <About />
+      </HeroCard>
+      <Activities />
     </>
   );
 };

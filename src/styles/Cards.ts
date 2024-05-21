@@ -31,4 +31,16 @@ const HeroVideoCard = styled.div`
   }
 `;
 
-export { Card1, HeroVideoCard };
+const HeroCard = styled.div`
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  object-fit: cover;
+  padding: 2rem;
+`;
+
+export { Card1, HeroVideoCard, HeroCard };

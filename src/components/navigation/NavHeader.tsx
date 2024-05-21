@@ -25,13 +25,18 @@ export default function NavHeader() {
             </li>
           )}
           {auth.isLoggedIn() && (
-            <li>
-              <NavLink to="/admin">Admin</NavLink>
-            </li>
+            <>
+              <li>
+                <NavLink to="/admin">Admin</NavLink>
+              </li>
+              <li>
+                <NavLink to="/reservations">Reservationer</NavLink>
+              </li>
+              <li>
+                <NavLink to="/logout">Log ud</NavLink>
+              </li>
+            </>
           )}
-          <li>
-            <NavLink to="/logout">Log ud</NavLink>
-          </li>
         </ul>
       </nav>
     </Nav>
