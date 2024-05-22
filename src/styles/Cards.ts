@@ -1,3 +1,4 @@
+import styled from 'styled-components';
 import style from 'styled-components';
 
 const Card1 = style.div`
@@ -58,4 +59,4 @@ const EmpInitials = styled.p`
   font-weight: bold;
 `;
 
-export { Card1, HeroVideoCard, HeroCard, EmpGrid, EmpCard, EmpImage, EmpTitle, EmpDetails, EmpInitials};
+export { Card1, HeroVideoCard, EmpGrid, EmpCard, EmpImage, EmpTitle, EmpDetails, EmpInitials};

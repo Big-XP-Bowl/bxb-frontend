@@ -43,11 +43,6 @@ function useSchedules() {
     }
   }
 
-  // @GetMapping("/employee/{employeeId}")
-  // public List<ScheduleDTO> getSchedulesByEmployeeId(@PathVariable int employeeId) {
-  //     return scheduleService.getSchedulesByEmployeeId(employeeId);
-  // }
-
   const fetchSchedulesByEmployeeId = async (employeeId: number) => {
     try {
       const res = await fetch(SCHEDULEURL + '/employee/' + employeeId);
