@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import styled from 'styled-components';
-import style from 'styled-components';
-=======
 import style, { styled } from "styled-components";
->>>>>>> parent of ff3300c (Merge branch 'dev-main' of https://github.com/Big-XP-Bowl/bxb-frontend into dev-main)
 
 const Card1 = style.div`
   padding: 1rem;
@@ -86,4 +81,4 @@ const EmpInitials = styled.p`
   font-weight: bold;
 `;
 
-export { Card1, HeroVideoCard, EmpGrid, EmpCard, EmpImage, EmpTitle, EmpDetails, EmpInitials};
+export { Card1, HeroVideoCard, HeroCard, EmpGrid, EmpCard, EmpImage, EmpTitle, EmpDetails, EmpInitials};
