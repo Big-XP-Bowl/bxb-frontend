@@ -36,4 +36,20 @@ interface IDiningTable extends IActivity {
   diningTableNumber: number;
 }
 
-export type { IReservation, IActivity, IAirhockey, IBowlingLane, IDiningTable };
+interface ISchedule {
+  id: number;
+  employeeId: number;
+  startTime: string;
+  endTime: string;
+}
+
+interface IEmployee {
+  id: number;
+  emp_type: string;
+  image_url: string;
+  initials: string;
+  name: string;
+  schedule: ISchedule[];
+}
+
+export type { IReservation, IActivity, IAirhockey, IBowlingLane, IDiningTable, ISchedule, IEmployee };

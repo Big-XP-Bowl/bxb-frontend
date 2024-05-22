@@ -96,7 +96,7 @@ const TestReservations: React.FC = () => {
   return (
     <div>
       <Toaster />
-      <h1>Reservations Calendar</h1>
+      <h1>Reservation Calendar</h1>
       <Calendar
         localizer={localizer}
         events={events}

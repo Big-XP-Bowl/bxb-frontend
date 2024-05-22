@@ -43,4 +43,42 @@ const HeroCard = styled.div`
   padding: 2rem;
 `;
 
-export { Card1, HeroVideoCard, HeroCard };
+const EmpGrid = styled.div`
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 1200px;
+`;
+
+const EmpCard = styled.div`
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 30%;
+  padding: 20px;
+  text-align: center;
+`;
+
+const EmpImage = styled.img`
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 15px;
+`;
+
+const EmpTitle = styled.h2`
+  font-size: 1.5em;
+  margin-bottom: 10px;
+`;
+
+const EmpDetails = styled.p`
+  font-size: 1em;
+  margin-bottom: 10px;
+`;
+
+const EmpInitials = styled.p`
+  font-size: 1.2em;
+  font-weight: bold;
+`;
+
+export { Card1, HeroVideoCard, HeroCard, EmpGrid, EmpCard, EmpImage, EmpTitle, EmpDetails, EmpInitials};
