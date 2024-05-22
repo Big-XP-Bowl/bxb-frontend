@@ -1,7 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "react-scroll";
 import { useAuth } from "../../security/AuthProvider";
 import Nav from "../../styles/Nav";
 import { FaBowlingBall } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 export default function NavHeader() {
   const auth = useAuth();
@@ -9,15 +10,39 @@ export default function NavHeader() {
   return (
     <Nav>
       <nav>
-        <NavLink to="/" style={{ padding: "1rem" }}>
+        <NavLink to="/">
           <FaBowlingBall size={35} color="#f9abab" />
         </NavLink>
         <ul>
           <li>
-            <NavLink to="/activities">Alle aktiviter</NavLink>
+            <Link
+              to="activities"
+              smooth={true}
+              duration={500}
+              style={{ cursor: "pointer" }}
+            >
+              Alle aktiviter
+            </Link>
           </li>
           <li>
-            <NavLink to="/about">About</NavLink>
+            <Link
+              to="products"
+              smooth={true}
+              duration={500}
+              style={{ cursor: "pointer" }}
+            >
+              Produkter
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="about"
+              smooth={true}
+              duration={500}
+              style={{ cursor: "pointer" }}
+            >
+              About
+            </Link>
           </li>
           {!auth.isLoggedIn() && (
             <li>

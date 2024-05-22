@@ -35,7 +35,8 @@ const HeroCard = styled.div`
   position: relative;
   background-size: cover;
   background-position: center;
-  height: 100vh;
+  height: auto;
+  min-height: 100vh;
   justify-content: center;
   align-items: center;
   color: #fff;
@@ -53,7 +54,7 @@ const EmpGrid = styled.div`
 const EmpCard = styled.div`
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 30%;
   padding: 20px;
   text-align: center;
@@ -81,4 +82,14 @@ const EmpInitials = styled.p`
   font-weight: bold;
 `;
 
-export { Card1, HeroVideoCard, HeroCard, EmpGrid, EmpCard, EmpImage, EmpTitle, EmpDetails, EmpInitials};
+export {
+  Card1,
+  HeroVideoCard,
+  HeroCard,
+  EmpGrid,
+  EmpCard,
+  EmpImage,
+  EmpTitle,
+  EmpDetails,
+  EmpInitials,
+};

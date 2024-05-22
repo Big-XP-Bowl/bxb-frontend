@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import useProducts from '../hooks/useProducts';
-import { IProductDTO } from '../types/types';
+import React, { useState } from "react";
+import useProducts from "../hooks/useProducts";
+import { IProductDTO } from "../types/types";
+import { Grid1 } from "../styles/Grids";
 
 const Products: React.FC = () => {
   const { products, loading } = useProducts();
@@ -9,7 +10,7 @@ const Products: React.FC = () => {
   const handleAddToCart = (productId: number) => {
     setCart((prev) => ({
       ...prev,
-      [productId]: (prev[productId] || 0) + 1
+      [productId]: (prev[productId] || 0) + 1,
     }));
   };
 
@@ -27,7 +28,7 @@ const Products: React.FC = () => {
 
   const calculateTotal = () => {
     return Object.entries(cart).reduce((total, [productId, quantity]) => {
-      const product = products.find(p => p.id === parseInt(productId));
+      const product = products.find((p) => p.id === parseInt(productId));
       return total + (product ? product.price * quantity : 0);
     }, 0);
   };
@@ -37,24 +38,31 @@ const Products: React.FC = () => {
   return (
     <div>
       <h1>Products</h1>
-      <div>
+      <Grid1>
         {products.map((product) => (
           <div key={product.id}>
             <h3>{product.name}</h3>
             <p>{product.price} kr</p>
-            <button onClick={() => handleAddToCart(product.id)}>Add to cart</button>
-            <button onClick={() => handleRemoveFromCart(product.id)}>Remove from cart</button>
+            <button onClick={() => handleAddToCart(product.id)}>
+              Add to cart
+            </button>
+            <button onClick={() => handleRemoveFromCart(product.id)}>
+              Remove from cart
+            </button>
           </div>
         ))}
-      </div>
+      </Grid1>
       <h2>Cart</h2>
       <div>
         {Object.entries(cart).map(([productId, quantity]) => {
-          const product = products.find(p => p.id === parseInt(productId));
+          const product = products.find((p) => p.id === parseInt(productId));
           return (
             <div key={productId}>
               <h3>{product?.name}</h3>
-              <p>{product?.price} kr x {quantity} = {product?.price * quantity} kr</p>
+              <p>
+                {product?.price} kr x {quantity} = {product?.price * quantity}{" "}
+                kr
+              </p>
             </div>
           );
         })}
@@ -62,6 +70,6 @@ const Products: React.FC = () => {
       <h2>Total: {calculateTotal()} kr</h2>
     </div>
   );
-}
+};
 
 export default Products;
