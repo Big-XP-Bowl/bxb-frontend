@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import styled from 'styled-components';
 import style from 'styled-components';
+=======
+import style, { styled } from "styled-components";
+>>>>>>> parent of ff3300c (Merge branch 'dev-main' of https://github.com/Big-XP-Bowl/bxb-frontend into dev-main)
 
 const Card1 = style.div`
   padding: 1rem;
@@ -11,14 +15,37 @@ const Card1 = style.div`
   color: #333;
 `;
 
-const HeroVideoCard = style.div`
+const HeroVideoCard = styled.div`
   position: fixed;
   left: 0;
   top: 0;
   width: 100%;
-  height: 100%;
-  z-index: 0;
+  height: 101%;
   overflow: hidden;
+  z-index: -1;
+
+  video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    opacity: 0.85;
+  }
+`;
+
+const HeroCard = styled.div`
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  object-fit: cover;
+  padding: 2rem;
 `;
 
 const EmpGrid = styled.div`
