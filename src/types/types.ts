@@ -1,9 +1,9 @@
 interface IReservation {
   id: number;
-  activityId: number; 
-  startTime: string; 
+  activityId: number;
+  startTime: string;
   partySize: number;
-  userWithRolesUsername: string; 
+  userWithRolesUsername: string;
   customerName: string;
   customerPhone: string;
 }
@@ -52,4 +52,13 @@ interface IEmployee {
   schedule: ISchedule[];
 }
 
-export type { IReservation, IActivity, IAirhockey, IBowlingLane, IDiningTable, ISchedule, IEmployee };
+//PRODUCT
+interface IProductDTO {
+  id: number;
+  name: string;
+  price: number;
+  imageUrl: string;
+  category: string;
+}
+
+export type { IReservation, IActivity, IAirhockey, IBowlingLane, IDiningTable, ISchedule, IEmployee, IProductDTO };

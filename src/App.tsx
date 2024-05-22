@@ -31,14 +31,15 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/About" element={<About />} />
 
+
           {/* ruter til admin visning */}
           <Route path="/activities" element={<Activities />} />
           <Route path="/reservations" element={<Reservations />} />
           <Route path="/test-reservations" element={<TestReservations />} />
-          <Route path="/products" element={<Products />} />
           <Route path="/employees" element={<Employees />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/products" element={<Products />} />
 
           <Route path="/login" element={<Login />} />
         </Routes>
