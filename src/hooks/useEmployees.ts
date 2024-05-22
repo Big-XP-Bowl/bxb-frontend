@@ -73,7 +73,23 @@ function useEmployees() {
     }
   };
 
-  return { employees, fetchEmployeeById, fetchEmployeesByEmpType, createEmployee, isLoading };
+  const updateEmployee = async (employee: Partial<IEmployee>) => {
+    try {
+      const options = makeOptions('PUT', employee);
+      const res = await fetch(EMPLOYEEURL + '/update', options);
+      const data = await handleHttpErrors(res);
+      setEmployees(prev => prev.map(e => e.id === data.id ? data : e));
+      return data;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        toast.error(error.message);
+      } else {
+        toast.error('En uventet fejl opstod');
+      }
+    }
+  }
+
+  return { employees, fetchEmployeeById, fetchEmployeesByEmpType, createEmployee, updateEmployee, isLoading };
 }
 
 export default useEmployees;
