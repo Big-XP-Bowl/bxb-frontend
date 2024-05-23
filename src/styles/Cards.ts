@@ -44,52 +44,54 @@ const HeroCard = styled.div`
   padding: 2rem;
 `;
 
-const EmpGrid = styled.div`
+const Card2Grid = styled.div`
   display: flex;
   justify-content: space-around;
   width: 100%;
   max-width: 1200px;
 `;
 
-const EmpCard = styled.div`
+const Card2 = styled.div`
   background: #fff;
+  min-width: 300px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   width: 30%;
   padding: 20px;
   text-align: center;
-`;
 
-const EmpImage = styled.img`
+  img {
   width: 100%;
-  height: auto;
+  height: 200px; /* Set a fixed height */
+  object-fit: cover; /* Maintain aspect ratio and cover the given area */
   border-radius: 10px;
   margin-bottom: 15px;
+  }
 `;
 
-const EmpTitle = styled.h2`
+const Card2Breakline = styled.hr`
+  border: 0;
+  height: 1px;
+  background: #333;
+  background-image: linear-gradient(to right, #ccc, #333, #ccc);
+  margin: 20px 0;
+  `;
+
+const Card2Title = styled.h2`
   font-size: 1.5em;
   margin-bottom: 10px;
 `;
 
-const EmpDetails = styled.p`
-  font-size: 1em;
+const Card2Info = styled.p`
+  font-size: 1.2em;
   margin-bottom: 10px;
 `;
 
-const EmpInitials = styled.p`
-  font-size: 1.2em;
-  font-weight: bold;
+const Card2Details = styled.p`
+  font-size: 0.8em;
+  margin-bottom: 10px;
 `;
 
-export {
-  Card1,
-  HeroVideoCard,
-  HeroCard,
-  EmpGrid,
-  EmpCard,
-  EmpImage,
-  EmpTitle,
-  EmpDetails,
-  EmpInitials,
-};
+
+export { Card1, HeroVideoCard, HeroCard, Card2Grid, Card2, Card2Breakline, Card2Title, Card2Details, Card2Info};

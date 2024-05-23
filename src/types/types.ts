@@ -45,8 +45,8 @@ interface ISchedule {
 
 interface IEmployee {
   id: number;
-  emp_type: string;
-  image_url: string;
+  empType: string;
+  imageUrl: string;
   initials: string;
   name: string;
   schedule: ISchedule[];

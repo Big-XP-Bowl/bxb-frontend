@@ -6,6 +6,14 @@ import useSchedule from '../hooks/useSchedules';
 import useEmployees from '../hooks/useEmployees';
 import { ISchedule } from '../types/types';
 import { Toaster } from 'react-hot-toast';
+import {
+  Modal,
+  FormContainer,
+  InputContainer,
+  Label,
+  Input,
+  ButtonContainer,
+} from "../styles/FormLayout.ts";
 
 const localizer = momentLocalizer(moment);
 
@@ -15,7 +23,10 @@ const Schedule: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [date, setDate] = useState<Date>(new Date());
   const [selectedEmployee, setSelectedEmployee] = useState<string>('');
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [newEvent, setNewEvent] = useState<{ start: Date; end: Date }>({ start: new Date(), end: new Date() });
 
+  // Fetch schedules and format them for the calendar
   useEffect(() => {
     if (!isLoading) {
       const formattedEvents = schedules.map((schedule: ISchedule) => ({
@@ -24,11 +35,11 @@ const Schedule: React.FC = () => {
         end: new Date(schedule.endTime),
         id: schedule.id,
       }));
-      console.log(schedules)
       setEvents(formattedEvents);
     }
   }, [schedules, isLoading]);
 
+  // Fetch employees for the dropdown
   useEffect(() => {
     if (employees.length > 0) {
       console.log('Employees:', employees);
@@ -38,11 +49,26 @@ const Schedule: React.FC = () => {
   const handleEmployeeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedEmployee = event.target.value;
     setSelectedEmployee(selectedEmployee);
-    console.log(`Selected employee: ${selectedEmployee}`);
   };
 
   const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
-    console.log(`Selected slot: Start - ${moment(slotInfo.start).format('HH:mm')}, End - ${moment(slotInfo.end).format('HH:mm')}, Selected date: ${moment(slotInfo.start).format('YYYY-MM-DD')}`);
+    setNewEvent({ start: slotInfo.start, end: slotInfo.end });
+    setShowModal(true);
+  };
+
+  const handleShowForm = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowModal(false);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // Here you can handle the form submission, e.g., save the new event
+    console.log('New event:', newEvent, 'Selected employee:', selectedEmployee);
+    setShowModal(false);
   };
 
   const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: (action: string, date?: Date) => void }) => {
@@ -64,6 +90,7 @@ const Schedule: React.FC = () => {
             </option>
           ))}
         </select>
+        <button onClick={handleShowForm}>Opret Vagt</button>
       </div>
     );
   };
@@ -111,6 +138,64 @@ const Schedule: React.FC = () => {
         selectable
         onSelectSlot={handleSelectSlot}
       />
+
+      {showModal && (
+        <Modal>
+          <FormContainer>
+            <h2>Opret Vagt</h2>
+            <form onSubmit={handleSubmit}>
+              <InputContainer>
+                <Label htmlFor="startTime">Starttidspunkt</Label>
+                <Input
+                  type="time"
+                  id="startTime"
+                  name="startTime"
+                  required
+                  value={moment(newEvent.start).format('HH:mm')}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, start: moment(newEvent.start).set({ hour: parseInt(e.target.value.split(':')[0]), minute: parseInt(e.target.value.split(':')[1]) }).toDate() })
+                  }
+                />
+              </InputContainer>
+              <InputContainer>
+                <Label htmlFor="endTime">Sluttidspunkt</Label>
+                <Input
+                  type="time"
+                  id="endTime"
+                  name="endTime"
+                  required
+                  value={moment(newEvent.end).format('HH:mm')}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, end: moment(newEvent.end).set({ hour: parseInt(e.target.value.split(':')[0]), minute: parseInt(e.target.value.split(':')[1]) }).toDate() })
+                  }
+                />
+              </InputContainer>
+              <InputContainer>
+                <Label htmlFor="employee">Ansat</Label>
+                <select
+                  id="employee"
+                  name="employee"
+                  value={selectedEmployee}
+                  onChange={handleEmployeeChange}
+                  required
+                >
+                  <option value="">Vælg Ansat</option>
+                  {employees.map((employee) => (
+                    <option key={employee.id} value={employee.id}>
+                      {employee.name}
+                    </option>
+                  ))}
+                </select>
+              </InputContainer>
+              <p>Rolle: employee.empType</p>
+              <ButtonContainer>
+                <button type="submit">Opret</button>
+                <button type="button" onClick={handleCloseForm}>Annuller</button>
+              </ButtonContainer>
+            </form>
+          </FormContainer>
+        </Modal>
+      )}
     </div>
   );
 };
