@@ -34,9 +34,7 @@ const Home = () => {
       <HeroCard id="activities">
         <Activities />
       </HeroCard>
-      <HeroCard id="products">
-        <Products />
-      </HeroCard>
+
     </>
   );
 };

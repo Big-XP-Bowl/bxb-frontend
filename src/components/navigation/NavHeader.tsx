@@ -25,14 +25,10 @@ export default function NavHeader() {
             </Link>
           </li>
           <li>
-            <Link
-              to="products"
-              smooth={true}
-              duration={500}
-              style={{ cursor: "pointer" }}
+            <NavLink to="/products"
             >
               Produkter
-            </Link>
+            </NavLink>
           </li>
           <li>
             <Link
