@@ -138,7 +138,7 @@ const Employees = () => {
                 value={formData.empType || ''}
                 onChange={handleFormChange}
               >
-                <option value="">Select Employee Type</option>
+                <option value="" disabled>Vælg Rolle</option>
                 <option value="MANAGER">MANAGER</option>
                 <option value="BAR">BAR</option>
                 <option value="MAINTENANCE">MAINTENANCE</option>
@@ -146,12 +146,11 @@ const Employees = () => {
               </select>
             </InputContainer>
             <ButtonContainer>
-              {/* //@ts-expect-error - can't get submit to work any other way */}
               <button type="submit" onClick={handleFormSubmit}>
-                Save
+                Opdater
               </button>
               <button type="button" onClick={() => setShowModal(false)}>
-                Cancel
+                Annuller
               </button>
             </ButtonContainer>
           </FormContainer>
