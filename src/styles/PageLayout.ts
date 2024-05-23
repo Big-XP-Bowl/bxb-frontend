@@ -34,4 +34,26 @@ justify-items: center;
 padding: 1rem;
 `;
 
-export {PageLayout, ContentGrid, ContentBox};
+const ProductContentBox = styled.div`
+  background-color: white;
+  border: 1px solid black;
+  padding: 1rem;
+  border-radius: 5px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 2rem;
+  }
+`;
+
+const CartContentBox = styled.div`
+  background-color: white;
+  border: 1px solid black;
+  padding: 1rem;
+  border-radius: 5px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 2rem;
+  }
+`;
+
+export { PageLayout, ContentGrid, ContentBox, ProductContentBox, CartContentBox };
