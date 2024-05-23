@@ -43,6 +43,7 @@ const TestReservations: React.FC = () => {
     console.log(`Filtered activities for ${selectedType}:`, filteredActivities); // Use template literals to include selectedType
   };
   
+  //@ts-expect-error - SlotInfo is not defined
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     console.log(`Selected slot: Start - ${moment(slotInfo.start).format('HH:mm')}, End - ${moment(slotInfo.end).format('HH:mm')}, Selected date: ${moment(slotInfo.start).format('YYYY-MM-DD')}`);
   

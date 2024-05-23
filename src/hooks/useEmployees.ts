@@ -73,12 +73,14 @@ function useEmployees() {
     }
   };
 
-  const updateEmployee = async (employee: Partial<IEmployee>) => {
+  const updateEmployee = async (id: number, employee: Partial<IEmployee>) => {
     try {
-      const options = makeOptions('PUT', employee);
-      const res = await fetch(EMPLOYEEURL + '/update', options);
+      const options = makeOptions('PATCH', employee);
+      const res = await fetch(EMPLOYEEURL + '/' + id, options);
       const data = await handleHttpErrors(res);
-      setEmployees(prev => prev.map(e => e.id === data.id ? data : e));
+      setEmployees(prev =>
+        prev.map(employee => (employee.id === id ? data : employee))
+      );
       return data;
     } catch (error) {
       if (error instanceof HttpException) {

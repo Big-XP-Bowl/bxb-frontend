@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IEmployee } from '../types/types';
 import useEmployees from '../hooks/useEmployees';
 import { Card2, Card2Breakline, Card2Title, Card2Details, Card2Info } from '../styles/Cards';
@@ -28,17 +28,17 @@ const Employees = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [formData, setFormData] = useState<Partial<IEmployee>>(initialFormData);
 
-  const handleShowForm = () => {
-    setShowModal(true);
-  };
-
-  const handleUpdateEmployee = (employee: IEmployee) => {
-    setFormData(employee);
-    handleShowForm();
-  };
+  useEffect(() => {
+    if (selectedEmployee) {
+      console.log('Selected employee:', selectedEmployee);
+      setFormData(selectedEmployee);
+      setShowModal(true);
+    }
+  }, [selectedEmployee]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    console.log(`Changing ${name} to ${value}`);
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -47,11 +47,14 @@ const Employees = () => {
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Form submitted!');
+    console.log('Form data before submission:', formData);
     try {
       if (formData.id) {
-        await updateEmployee(formData.id, formData as IEmployee);
-        console.log('Employee updated:', formData);
+        const updatedEmployee = await updateEmployee(formData.id, formData as IEmployee);
+        console.log('Employee updated:', updatedEmployee);
         setShowModal(false);
+        setFormData(initialFormData); // Reset form data after submission
       } else {
         console.error('Employee ID is missing');
       }
@@ -83,7 +86,7 @@ const Employees = () => {
             </Card2Info>
             <FaPen
               style={{ marginRight: '5px', cursor: 'pointer' }}
-              onClick={() => handleUpdateEmployee(employee)}
+              onClick={() => setSelectedEmployee(employee)}
             />
             <FaCalendar
               style={{ marginRight: '5px', cursor: 'pointer' }}
@@ -95,7 +98,8 @@ const Employees = () => {
 
       {showModal && (
         <Modal>
-          <FormContainer onSubmit={handleFormSubmit}>
+          <FormContainer>
+            <h2>Update Employee</h2>
             <InputContainer>
               <Label htmlFor="name">Name</Label>
               <Input
@@ -142,7 +146,10 @@ const Employees = () => {
               </select>
             </InputContainer>
             <ButtonContainer>
-              <button type="submit">Save</button>
+              {/* //@ts-expect-error - can't get submit to work any other way */}
+              <button type="submit" onClick={handleFormSubmit}>
+                Save
+              </button>
               <button type="button" onClick={() => setShowModal(false)}>
                 Cancel
               </button>
