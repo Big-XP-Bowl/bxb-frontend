@@ -27,6 +27,7 @@ import {
   TableWrapper,
 } from "../styles/Tables.ts";
 import ActivityTypeRenderer from "../utils/activityTypeRenderer.tsx";
+import { PageLayout } from "../styles/PageLayout.ts";
 
 const Reservations = () => {
   const {
@@ -218,7 +219,7 @@ const Reservations = () => {
   }
 
   return (
-    <>
+    <PageLayout>
       <GridTop>
         <h2>Reservationer</h2>
         <button onClick={handleAddFormOpen}>Opret Reservation</button>
@@ -369,7 +370,7 @@ const Reservations = () => {
           </ButtonContainer>
         </Modal>
       )}
-    </>
+    </PageLayout>
   );
 };
 

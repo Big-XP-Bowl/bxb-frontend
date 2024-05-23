@@ -6,6 +6,7 @@ import useReservations from '../hooks/useReservations';
 import useActivities from '../hooks/useActivities';
 import { IReservation, IActivity } from '../types/types';
 import { Toaster } from 'react-hot-toast';
+import { PageLayout } from '../styles/PageLayout';
 
 const localizer = momentLocalizer(moment);
 
@@ -95,7 +96,7 @@ const TestReservations: React.FC = () => {
   };
 
   return (
-    <div>
+    <PageLayout>
       <Toaster />
       <h1>Reservation Calendar</h1>
       <Calendar
@@ -136,7 +137,7 @@ const TestReservations: React.FC = () => {
         max={new Date(0, 0, 0, 22, 0)}
         formats={{ timeGutterFormat: (date: Date) => moment(date).format('HH:mm') }}
       />
-    </div>
+    </PageLayout>
   );
 };
 
