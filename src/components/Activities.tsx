@@ -21,14 +21,8 @@ const Activities = () => {
             return (
               <div key={activity.id}>
                 <h2>{activity.name} </h2>
-                <p>{activity.closed ? "Til reparation" : "Ledigt :)"}</p>
+                <p>{activity.isClosed ? "Til reparation" : "Ledigt :)"}</p>
                 <p># of playurz: {activity.capacity}</p>
-                <p>
-                  {" "}
-                  {activity.childFriendly
-                    ? " Børnevenlig"
-                    : " Ikke børnevenlig"}{" "}
-                </p>
               </div>
             );
           })}
