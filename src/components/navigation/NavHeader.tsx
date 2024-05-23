@@ -1,7 +1,8 @@
+import { Link } from "react-scroll";
 import { useAuth } from "../../security/AuthProvider";
 import Nav from "../../styles/Nav";
 import { FaBowlingBall } from "react-icons/fa";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function NavHeader() {
   const auth = useAuth();
