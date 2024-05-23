@@ -90,7 +90,7 @@ const Employees = () => {
             />
             <FaCalendar
               style={{ marginRight: '5px', cursor: 'pointer' }}
-              // onClick={() => handleEditEmployeeSchedule(employee)}
+            // onClick={() => handleEditEmployeeSchedule(employee)}
             />
           </Card2>
         ))}
