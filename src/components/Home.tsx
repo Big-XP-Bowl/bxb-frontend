@@ -25,7 +25,16 @@ const Home = () => {
           top: "48px",
         }}
       >
-        <h1>VELKOMMEN TIL FEIN BOWLINGHAL</h1>
+        <h1
+          style={{
+            fontSize: "4rem",
+            fontWeight: "bold",
+            textShadow: "2px 2px 4px #000",
+            textAlign: "center",
+          }}
+        >
+          VELKOMMEN TIL FEIN BOWLINGHAL
+        </h1>
       </HeroCard>
 
       <HeroCard id="about">
