@@ -98,7 +98,7 @@ const Employees = () => {
 
       {showModal && (
         <Modal>
-          <FormContainer>
+          <FormContainer onSubmit={handleFormSubmit}>
             <h2>Update Employee</h2>
             <InputContainer>
               <Label htmlFor="name">Name</Label>
@@ -146,7 +146,7 @@ const Employees = () => {
               </select>
             </InputContainer>
             <ButtonContainer>
-              <button type="submit" onClick={handleFormSubmit}>
+              <button type="submit">
                 Opdater
               </button>
               <button type="button" onClick={() => setShowModal(false)}>

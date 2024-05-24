@@ -21,6 +21,11 @@ const TestReservations: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<Date | null>(null);
   const availableActivitiesRef = useRef<HTMLDivElement>(null);
 
+  interface SlotInfo {
+    start: Date;
+    end: Date;
+  }
+
   useEffect(() => {
     if (!isLoading) {
       console.log('Reservations:', reservations);
@@ -28,8 +33,6 @@ const TestReservations: React.FC = () => {
   }, [reservations, isLoading]);
 
   useEffect(() => {
-    if (activities.length > 0)
-      console.log('Activities:', activities); // Log activities only once
   }, [activities]);
 
   const handleActivityTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -39,33 +42,23 @@ const TestReservations: React.FC = () => {
     const filteredActivities = activities.filter((activity: IActivity) => {
       return activity.type === selectedType;
     });
-    console.log(`Filtered activities for ${selectedType}:`, filteredActivities); // Use template literals to include selectedType
 
     setAvailableActivities(filteredActivities);
   };
 
-  //@ts-expect-error - SlotInfo is not defined
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     setSelectedSlot(slotInfo.start);
-    console.log(
-      `Selected slot: Start - ${moment(slotInfo.start).format('HH:mm')}, End - ${moment(
-        slotInfo.end
-      ).format('HH:mm')}, Selected date: ${moment(slotInfo.start).format('YYYY-MM-DD')}`
-    );
-
+    
     if (selectedActivityType) {
       console.log('Selected activity type:', selectedActivityType);
 
-      // Find the filtered activity based on the selected type
       const filteredActivities = activities.filter((activity: IActivity) => activity.type === selectedActivityType);
 
-      console.log('Filtered activities:', filteredActivities); // Log all activities of the selected type
+      console.log('Filtered activities:', filteredActivities);
 
-      // Filter out the activities that have reservations for the specified time slot
       const availableFilteredActivities = filteredActivities.filter((filteredActivity) => {
-        // Check if there are reservations for the activity at the specified time slot
         const hasReservation = reservations.some((reservation) => {
-          // Convert slot start time to the same format as reservation start time
+  
           const slotStartTime = moment(slotInfo.start).format('YYYY-MM-DDTHH:mm:ss');
           const reservationStartTime = moment(reservation.startTime).format('YYYY-MM-DDTHH:mm:ss');
 
@@ -74,14 +67,10 @@ const TestReservations: React.FC = () => {
           return reservation.activityId === filteredActivity.id && reservationStartTime === slotStartTime;
         });
 
-        // Return true if there are no reservations for the activity at the specified time slot
         return !hasReservation;
       });
 
-      console.log('Available filtered activities:', availableFilteredActivities);
-      setAvailableActivities(availableFilteredActivities);
-      
-      // Scroll to the available activities
+      setAvailableActivities(availableFilteredActivities);      
       scrollToAvailableActivities();
     }
   };
@@ -96,14 +85,18 @@ const TestReservations: React.FC = () => {
     if (selectedSlot && moment(date).isSame(selectedSlot, 'minute')) {
       return {
         style: {
-          backgroundColor: '#f9abab', // Set color for selected slot
+          backgroundColor: '#f9abab',
         },
       };
     }
     return {};
   };
 
-  const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: Function }) => {
+  interface ToolbarNavigation {
+    (action: string, date?: Date): void; // Function signature with optional date argument
+  }
+
+  const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: ToolbarNavigation }) => {
     return (
       <div>
         <span>{label}</span>
@@ -135,7 +128,7 @@ const TestReservations: React.FC = () => {
         slotPropGetter={slotPropGetter}
         style={{ height: 500, margin: '50px' }}
         components={{
-          toolbar: (props: any) => (
+          toolbar: (props) => (
             <GridCalendarToolbar>
               <CustomToolbar
                 {...props}
@@ -178,7 +171,7 @@ const TestReservations: React.FC = () => {
         formats={{ timeGutterFormat: (date: Date) => moment(date).format('HH:mm') }}
       />
       <div ref={availableActivitiesRef}>
-        <h2>Available Activities:</h2>
+      <h2>Tilgængelige aktiviteter {selectedSlot ? moment(selectedSlot).format('dddd') : ''} d. {selectedSlot ? moment(selectedSlot).format('DD/MM/YYYY') : ''} kl. {selectedSlot ? moment(selectedSlot).format('HH:mm') : ''}</h2>
         <ul>
           {availableActivities.map((activity) => (
             <Card3 key={activity.id}>
