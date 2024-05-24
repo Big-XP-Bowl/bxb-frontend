@@ -138,7 +138,7 @@ const handleCloseForm = () => {
           toolbar: (props) => (
             <CustomToolbar
               {...props}
-              onNavigate={(action, newDate) => {
+              onNavigate={(action) => {
                 if (action === 'PREV') {
                   const newDate = moment(date).subtract(1, 'week').toDate();
                   setDate(newDate);
