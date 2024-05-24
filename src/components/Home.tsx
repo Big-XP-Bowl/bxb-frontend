@@ -2,7 +2,6 @@ import HERO from "/HERO.mp4";
 import { HeroCard, HeroVideoCard } from "../styles/Cards";
 import Activities from "./Activities";
 import About from "./About";
-import Products from "./Products";
 
 const Home = () => {
   return (

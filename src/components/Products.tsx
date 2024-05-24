@@ -121,6 +121,7 @@ const Products: React.FC = () => {
             </Card2>
           ))}
         </Grid1>
+  
 
         {/* Kurven vises kun for manager og bar-medlemmer */}
         {isLoggedInAs(["ADMIN", "BAR", "USER"]) && (
@@ -138,7 +139,9 @@ const Products: React.FC = () => {
                 return (
                   <div key={productId}>
                     <div><strong>{product?.name}</strong></div>
-                    <div> x {quantity} = {product?.price * quantity} kr</div>
+                    {product && (
+                      <div> x {quantity} = {product.price * quantity} kr</div>
+                    )}
                   </div>
                 );
               })}
