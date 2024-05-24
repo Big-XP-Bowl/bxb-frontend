@@ -1,4 +1,5 @@
 import style, { styled } from "styled-components";
+import BowlingColors from "./BowlingColors";
 
 const Card1 = style.div`
   padding: 1rem;
@@ -17,7 +18,7 @@ const HeroVideoCard = styled.div`
   width: 100%;
   height: 101%;
   overflow: hidden;
-  z-index: -1;
+  z-index: -100;
 
   video {
     position: absolute;
@@ -35,6 +36,7 @@ const HeroCard = styled.div`
   position: relative;
   background-size: cover;
   background-position: center;
+  background-color: ${BowlingColors.ThirdColor};
   height: auto;
   min-height: 100vh;
   justify-content: center;
@@ -42,6 +44,7 @@ const HeroCard = styled.div`
   color: #fff;
   object-fit: cover;
   padding: 2rem;
+  z-index: 1;
 `;
 
 const Card2Grid = styled.div`
