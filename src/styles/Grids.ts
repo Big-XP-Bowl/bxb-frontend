@@ -56,4 +56,13 @@ const GridTop = styled.div`
   gap: 1rem;
   `;
 
-export { Grid1, Grid2, GridTop };
+const GridCalendarToolbar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f9abab;
+  gap: 1rem;
+`;
+
+export { Grid1, Grid2, GridTop, GridCalendarToolbar };

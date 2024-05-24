@@ -9,6 +9,7 @@ import { IReservation } from "../types/types";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../security/AuthProvider";
+import { formatInTimeZone } from 'date-fns-tz';
 
 import {
   Modal,
@@ -27,7 +28,9 @@ import {
   TableWrapper,
 } from "../styles/Tables.ts";
 import ActivityTypeRenderer from "../utils/activityTypeRenderer.tsx";
+import { PageLayout } from "../styles/PageLayout.ts";
 
+// define const and states
 const Reservations = () => {
   const {
     reservations,
@@ -98,6 +101,7 @@ const Reservations = () => {
   const handleFormUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      //@ts-expect-error - id is not optional
       await updateReservation(formData.id, formData);
       setFormData(initialFormData);
       setShowAddForm(false);
@@ -121,8 +125,8 @@ const Reservations = () => {
     }
   };
 
+  // Fetch data based on selected activity type, only if not already fetched
   useEffect(() => {
-    // Fetch data based on selected activity type, only if not already fetched
     if (selectedActivityType === "Airhockey" && !activitiesFetched.Airhockey) {
       getAirhockeyTables();
       setActivitiesFetched((prev) => ({ ...prev, Airhockey: true }));
@@ -183,12 +187,25 @@ const Reservations = () => {
   };
 
   const handleDateChange = (date: Date) => {
-    const isoString = date.toISOString();
+
+    const timeZone = 'Europe/Copenhagen';
+
+    // Format the selected date in the target timezone
+    const formattedDate = formatInTimeZone(date, timeZone, 'yyyy-MM-dd\'T\'HH:mm:ss');
+
+    // Update the form data
     setFormData((prevState) => ({
       ...prevState,
-      startTime: isoString,
+      startTime: formattedDate,
     }));
   };
+    
+  //   const isoString = date.toISOString();
+  //   setFormData((prevState) => ({
+  //     ...prevState,
+  //     startTime: isoString,
+  //   }));
+  // };
 
   const renderActivityOptions = () => {
     if (selectedActivityType === "Airhockey") {
@@ -218,7 +235,7 @@ const Reservations = () => {
   }
 
   return (
-    <>
+    <PageLayout>
       <GridTop>
         <h2>Reservationer</h2>
         <button onClick={handleAddFormOpen}>Opret Reservation</button>
@@ -272,11 +289,9 @@ const Reservations = () => {
       </TableWrapper>
       {showAddForm && (
         <Modal>
-          <FormContainer>
+          <FormContainer onSubmit={formData.id ? handleFormUpdate : handleAddReservation} >
             <h2>{formData.id ? "Edit Reservation" : "Add Reservation"}</h2>
-            <form
-              onSubmit={formData.id ? handleFormUpdate : handleAddReservation}
-            >
+  
               <InputContainer>
                 <Label>
                   Start Tid og Dato:
@@ -284,6 +299,7 @@ const Reservations = () => {
                     selected={
                       formData.startTime ? new Date(formData.startTime) : null
                     }
+                    // @ts-expect-error - handleDateChange is not a function
                     onChange={(date) => handleDateChange(date)}
                     showTimeSelect
                     dateFormat="dd/MM/yyyy HH:mm"
@@ -350,7 +366,6 @@ const Reservations = () => {
                 </button>
                 <button onClick={() => setShowAddForm(false)}>Cancel</button>
               </ButtonContainer>
-            </form>
           </FormContainer>
         </Modal>
       )}
@@ -369,7 +384,7 @@ const Reservations = () => {
           </ButtonContainer>
         </Modal>
       )}
-    </>
+    </PageLayout>
   );
 };
 
