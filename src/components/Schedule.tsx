@@ -15,7 +15,16 @@ import {
   ButtonContainer,
 } from "../styles/FormLayout.ts";
 
-moment.locale('da');  // Set moment locale to Danish
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+moment.locale('da', {
+  months: 'januar_februar_marts_april_maj_juni_juli_august_september_oktober_november_december'.split('_').map(capitalize),
+  monthsShort: 'jan_feb_mar_apr_maj_jun_jul_aug_sep_okt_nov_dec'.split('_').map(capitalize),
+  weekdays: 'søndag_mandag_tirsdag_onsdag_torsdag_fredag_lørdag'.split('_').map(capitalize),
+  weekdaysShort: 'søn_man_tir_ons_tor_fre_lør'.split('_').map(capitalize),
+  week: {
+    dow: 1, // Monday is the first day of the week
+  },
+});
 const localizer = momentLocalizer(moment);
 
 const Schedule: React.FC = () => {
@@ -130,7 +139,7 @@ const handleCloseForm = () => {
           toolbar: (props) => (
             <CustomToolbar
               {...props}
-              onNavigate={(action, newDate) => {
+              onNavigate={(action) => {
                 if (action === 'PREV') {
                   const newDate = moment(date).subtract(1, 'week').toDate();
                   setDate(newDate);
@@ -155,12 +164,11 @@ const handleCloseForm = () => {
         formats={{
           timeGutterFormat: (date) => moment(date).format('HH:mm'),
           dayFormat: (date) => moment(date).format('ddd DD/MM'), // Custom day format
-          weekdayFormat: (date) => moment(date).format('dddd'), // Custom weekday format
-          agendaHeaderFormat: { start: 'DD/MM/YYYY', end: 'DD/MM/YYYY' }, // Custom agenda header format
+          weekdayFormat: (date) => moment(date).format('dddd'),  // Custom weekday format
+          monthHeaderFormat: (date) => moment(date).format('MMMM YYYY'), // Custom month header format
         }}
         selectable
         onSelectSlot={handleSelectSlot}
-        firstDay={1} // Start the week on Monday
       />
 
       {showModal && (
