@@ -89,7 +89,6 @@ const handleCloseForm = () => {
   setShowModal(false);
 };
 
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('New event:', newEvent, 'Selected employee:', selectedEmployee);
@@ -139,7 +138,7 @@ const handleCloseForm = () => {
           toolbar: (props) => (
             <CustomToolbar
               {...props}
-              onNavigate={(action) => {
+              onNavigate={(action, newDate) => {
                 if (action === 'PREV') {
                   const newDate = moment(date).subtract(1, 'week').toDate();
                   setDate(newDate);
@@ -169,13 +168,13 @@ const handleCloseForm = () => {
         }}
         selectable
         onSelectSlot={handleSelectSlot}
+        onNavigate={(newDate) => setDate(newDate)}
       />
 
       {showModal && (
         <Modal>
-          <FormContainer>
+          <FormContainer onSubmit={handleSubmit}>
             <h2>Opret Vagt</h2>
-            <form onSubmit={handleSubmit}>
               <InputContainer>
                 <Label htmlFor="startTime">Starttidspunkt</Label>
                 <select
@@ -236,7 +235,6 @@ const handleCloseForm = () => {
                 <button type="submit">Opret</button>
                 <button type="button" onClick={handleCloseForm}>Annuller</button>
               </ButtonContainer>
-            </form>
           </FormContainer>
         </Modal>
       )}
