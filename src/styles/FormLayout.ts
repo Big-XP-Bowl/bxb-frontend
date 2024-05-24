@@ -12,7 +12,7 @@ const Modal = styled.div`
   z-index: 1001;
 `;
 
-const FormContainer = styled.div`
+const FormContainer = styled.form`
   margin: 20px;
 `;
 
