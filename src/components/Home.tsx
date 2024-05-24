@@ -2,7 +2,6 @@ import HERO from "/HERO.mp4";
 import { HeroCard, HeroVideoCard } from "../styles/Cards";
 import Activities from "./Activities";
 import About from "./About";
-import Products from "./Products";
 import {
   WavesSection,
   WaveWrapperTop,
@@ -59,17 +58,6 @@ const Home = () => {
         </WaveWrapperTop>
         <HeroCard id="activities">
           <Activities />
-        </HeroCard>
-        <WaveWrapperBottom>
-          <WaveBottom />
-        </WaveWrapperBottom>
-      </WavesSection>
-      <WavesSection>
-        <WaveWrapperTop>
-          <WaveTop />
-        </WaveWrapperTop>
-        <HeroCard id="products">
-          <Products />
         </HeroCard>
         <WaveWrapperBottom>
           <WaveBottom />
