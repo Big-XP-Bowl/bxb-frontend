@@ -8,6 +8,7 @@ import {
   WaveWrapperBottom,
 } from "../styles/Curves";
 import { WaveTop, WaveBottom } from "../styles/Waves";
+import Footer from "./navigation/Footer";
 
 const Home = () => {
   return (
