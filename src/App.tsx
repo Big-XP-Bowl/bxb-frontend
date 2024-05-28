@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import About from "./components/About";
+import Activities from "./components/Activities";
+import Airhockey from "./components/Airhockey";
+import Bowling from "./components/Bowling";
+import Contact from "./components/Contact";
+import Dining from "./components/Dining";
+import Employees from "./components/Employees";
+import Home from "./components/Home";
+import Maintenance from "./components/Maintenance";
+import Layout from "./components/navigation/Layout";
+import Products from "./components/Products";
+import Reservations from "./components/Reservations";
+import Schedule from "./components/Schedule";
+import TestReservations from "./components/testReservations";
+import Login from "./security/Login";
+import { Route, Routes } from "react-router-dom";
+
+// make routes here!
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Layout>
+        <Routes>
+          {/* ruter til kunde visning */}
+          <Route path="/" element={<Home />} />
+          <Route path="/bowling" element={<Bowling />} />
+          <Route path="/dining" element={<Dining />} />
+          <Route path="/airhockey" element={<Airhockey />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/About" element={<About />} />
+
+
+          {/* ruter til admin visning */}
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/reservations" element={<Reservations />} />
+          <Route path="/test-reservations" element={<TestReservations />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/products" element={<Products />} />
+
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Layout>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
