@@ -9,12 +9,13 @@ import { Toaster } from 'react-hot-toast';
 import { PageLayout } from '../styles/PageLayout';
 import styled from 'styled-components';
 import { GridCalendarToolbar } from '../styles/Grids';
+import { toast } from 'react-hot-toast';
 
 const localizer = momentLocalizer(moment);
 
 const TestReservations: React.FC = () => {
   const { reservations, isLoading } = useReservations();
-  const { activities } = useActivities(); // Call useActivities only once
+  const { activities, updateActivity, setActivities } = useActivities();
   const [date, setDate] = useState<Date>(new Date());
   const [selectedActivityType, setSelectedActivityType] = useState<string>('');
   const [availableActivities, setAvailableActivities] = useState<IActivity[]>([]);
@@ -58,7 +59,6 @@ const TestReservations: React.FC = () => {
 
       const availableFilteredActivities = filteredActivities.filter((filteredActivity) => {
         const hasReservation = reservations.some((reservation) => {
-  
           const slotStartTime = moment(slotInfo.start).format('YYYY-MM-DDTHH:mm:ss');
           const reservationStartTime = moment(reservation.startTime).format('YYYY-MM-DDTHH:mm:ss');
 
@@ -82,18 +82,54 @@ const TestReservations: React.FC = () => {
   };
 
   const slotPropGetter = (date: Date) => {
-    if (selectedSlot && moment(date).isSame(selectedSlot, 'minute')) {
-      return {
-        style: {
-          backgroundColor: '#f9abab',
-        },
-      };
+    if (!selectedActivityType) return {};
+  
+    // Check if the slot is part of the time gutter column
+    const isTimeGutter = date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
+    if (isTimeGutter) {
+      return {}; // Return an empty object to leave the time gutter cells unaffected
     }
-    return {};
+  
+    const totalActivities = activities.filter(activity => activity.type === selectedActivityType).length;
+    if (totalActivities === 0) return {};
+  
+    const reservationsAtSlot = reservations.filter(reservation =>
+      moment(reservation.startTime).isSame(date, 'minute') &&
+      activities.some(activity => activity.id === reservation.activityId && activity.type === selectedActivityType)
+    ).length;
+  
+    const reservedPercentage = (reservationsAtSlot / totalActivities) * 100;
+  
+    let backgroundColor = '';
+    if (reservedPercentage > 50) {
+      backgroundColor = '#f9abab'; // Red
+    } else if (reservedPercentage > 25) {
+      backgroundColor = '#f9f3ab'; // Yellow
+    } else {
+      backgroundColor = '#abf9ab'; // Green
+    }
+  
+    return {
+      style: {
+        backgroundColor,
+      },
+    };
   };
 
+  const toggleActivityIsClosed = async (activity: IActivity) => {
+    const updatedActivity = { ...activity, isClosed: !activity.isClosed };
+    
+    try {
+      await updateActivity(activity.id, updatedActivity);
+      toast.success(`Activity ${updatedActivity.isClosed ? 'closed' : 'opened'} successfully`);
+      setActivities(activities);
+    } catch (error) {
+      toast.error('Error updating activity');
+    }
+    
+  };
   interface ToolbarNavigation {
-    (action: string, date?: Date): void; // Function signature with optional date argument
+    (action: string, date?: Date): void;
   }
 
   const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: ToolbarNavigation }) => {
@@ -196,6 +232,9 @@ const TestReservations: React.FC = () => {
                   <Card3Details>4 - 8 personer | 90 min.</Card3Details>
                 </>
               )}
+              <button onClick={() => toggleActivityIsClosed(activity)}>
+                {activity.isClosed ? 'Open' : 'Close'}
+              </button>
             </Card3>
           ))}
         </ul>

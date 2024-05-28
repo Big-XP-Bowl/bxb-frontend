@@ -199,13 +199,6 @@ const Reservations = () => {
       startTime: formattedDate,
     }));
   };
-    
-  //   const isoString = date.toISOString();
-  //   setFormData((prevState) => ({
-  //     ...prevState,
-  //     startTime: isoString,
-  //   }));
-  // };
 
   const renderActivityOptions = () => {
     if (selectedActivityType === "Airhockey") {

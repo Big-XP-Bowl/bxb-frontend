@@ -110,7 +110,7 @@ const Products: React.FC = () => {
               <Card2Breakline />
 
               {/* Knapper til at håndtere produkter, kun synlig for manager og bar-medlemmer */}
-              {isLoggedInAs(["ADMIN", "BAR", "USER"]) && (
+              {isLoggedInAs(["ADMIN", "BAR"]) && (
                 <>
                   <button onClick={() => handleAddToCart(product.id)}>Add to cart</button>
                   <button onClick={() => handleRemoveFromCart(product.id)}>Remove from cart</button>
@@ -155,10 +155,10 @@ const Products: React.FC = () => {
         {/* Modal for at oprette/redigere produkter, kun synlig for manager og bar-medlemmer */}
         {showModal && isLoggedInAs(["ADMIN", "USER", "BAR",]) && (
           <Modal>
-            <FormContainer>
+            <FormContainer onSubmit={editProduct ? handleUpdateProduct : handleCreateProduct}>
               {/* Form til oprettelse/redigering af produkter */}
               <h2>{editProduct ? "Edit Product" : "Create Product"}</h2>
-              <form onSubmit={editProduct ? handleUpdateProduct : handleCreateProduct}>
+            
                 <InputContainer>
                   <Label htmlFor="name">Name</Label>
                   <Input
@@ -196,7 +196,7 @@ const Products: React.FC = () => {
                   <button type="submit">{editProduct ? "Update" : "Create"}</button>
                   <button type="button" onClick={handleCloseModal}>Cancel</button>
                 </ButtonContainer>
-              </form>
+      
             </FormContainer>
           </Modal>
         )}

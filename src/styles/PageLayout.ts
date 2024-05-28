@@ -8,9 +8,7 @@ const PageLayout = styled.div`
 `;
 
 const ContentGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  max-width: 80%;
+  display: flex;
   justify-content: space-around;
   align-items: center;
     

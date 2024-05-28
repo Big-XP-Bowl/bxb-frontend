@@ -3,6 +3,7 @@ import { User } from "../hooks/authHook";
 import "./loginLayout.css";
 import { useAuth } from "./AuthProvider";
 import { useLocation, useNavigate } from "react-router-dom";
+import { PageLayout } from "../styles/PageLayout";
 
 const Login = () => {
   const [user, setUser] = useState({ username: "", password: "" });
@@ -36,6 +37,7 @@ const Login = () => {
   }
 
   return (
+    <PageLayout>
     <div className="login-wrapper">
       <form className="login-form" onSubmit={handleSubmit}>
         <h2>Login</h2>
@@ -68,6 +70,7 @@ const Login = () => {
         </button>
       </form>
     </div>
+    </PageLayout>
   );
 };
 
