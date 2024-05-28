@@ -47,6 +47,19 @@ const TestReservations: React.FC = () => {
     setAvailableActivities(filteredActivities);
   };
 
+  const toggleActivityIsClosed = async (activity: IActivity) => {
+    const updatedActivity = { ...activity, isClosed: !activity.isClosed };
+    
+    try {
+      await updateActivity(activity.id, updatedActivity);
+      toast.success(`Activity ${updatedActivity.isClosed ? 'closed' : 'opened'} successfully`);
+      setActivities(activities);
+    } catch (error) {
+      toast.error('Error updating activity');
+    }
+    
+  };
+
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     setSelectedSlot(slotInfo.start);
     
@@ -116,18 +129,6 @@ const TestReservations: React.FC = () => {
     };
   };
 
-  const toggleActivityIsClosed = async (activity: IActivity) => {
-    const updatedActivity = { ...activity, isClosed: !activity.isClosed };
-    
-    try {
-      await updateActivity(activity.id, updatedActivity);
-      toast.success(`Activity ${updatedActivity.isClosed ? 'closed' : 'opened'} successfully`);
-      setActivities(activities);
-    } catch (error) {
-      toast.error('Error updating activity');
-    }
-    
-  };
   interface ToolbarNavigation {
     (action: string, date?: Date): void;
   }

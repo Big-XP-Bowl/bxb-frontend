@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaPen, FaTrash } from "react-icons/fa";
+import { FaPen, FaTrash, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import useReservations from "../hooks/useReservations";
 import useBowlingLanes from "../hooks/useBowlingLanes";
 import useDiningTables from "../hooks/useDiningTables";
@@ -69,6 +69,9 @@ const Reservations = () => {
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("startTime");
+  const [sortedAscending, setSortedAscending] = useState<boolean>(true); 
 
   useEffect(() => {
     if (username) {
@@ -223,6 +226,23 @@ const Reservations = () => {
     return null;
   };
 
+  const filteredReservations = reservations.filter((reservation) =>
+    reservation.customerPhone.includes(searchQuery)
+  );
+
+  const sortedReservations = [...filteredReservations].sort((a, b) => {
+    if (sortBy === "startTime") {
+      return sortedAscending
+        ? new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        : new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+    }
+    return 0;
+  });
+
+  const toggleSortDirection = () => {
+    setSortedAscending((prev) => !prev);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -231,6 +251,12 @@ const Reservations = () => {
     <PageLayout>
       <GridTop>
         <h2>Reservationer</h2>
+        <input
+          type="text"
+          placeholder="Search by phone number"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <button onClick={handleAddFormOpen}>Opret Reservation</button>
       </GridTop>
       <TableWrapper>
@@ -238,7 +264,17 @@ const Reservations = () => {
           <TableHeader>
             <tr>
               <th style={{ padding: "8px" }}>ID</th>
-              <th style={{ padding: "8px" }}>Start Tid</th>
+              <th style={{ padding: "8px" }} onClick={() => setSortBy("startTime")}>
+                Start Tid
+                {sortBy === "startTime" && (
+                  <span
+                    style={{ marginLeft: "5px", fontSize: "12px" }}
+                    onClick={toggleSortDirection}
+                  >
+                    {sortedAscending ? <FaArrowUp /> : <FaArrowDown />}
+                  </span>
+                )}
+              </th>
               <th style={{ padding: "8px" }}>Antal Deltagere</th>
               <th style={{ padding: "8px" }}>Kunde Navn</th>
               <th style={{ padding: "8px" }}>Telfon</th>
@@ -252,7 +288,7 @@ const Reservations = () => {
                 <td>Loading...</td>
               </tr>
             )}
-            {reservations.map((reservation) => (
+            {filteredReservations.map && sortedReservations.map((reservation) => (
               <TableRow key={reservation.id}>
                 <TableData>{reservation.id}</TableData>
                 <TableData>{reservation.startTime}</TableData>
@@ -260,7 +296,6 @@ const Reservations = () => {
                 <TableData>{reservation.customerName}</TableData>
                 <TableData>{reservation.customerPhone}</TableData>
                 <TableData>
-                  {/* Render activity name */}
                   {reservation.activityId && (
                     <>{<ActivityTypeRenderer reservation={reservation} />}</>
                   )}
