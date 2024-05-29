@@ -254,12 +254,12 @@ const toggleActivityClose = async (activity: IActivity) => {
                 </>
               )}
 
-<button
-  onClick={() => (activity.closed ? toggleActivityOpen(activity) : toggleActivityClose(activity))}
-  style={{ margin: '0.5em' }}
->
-  {activity.closed ? 'Open' : 'Close'}
-</button>
+              <button
+                onClick={() => (activity.closed ? toggleActivityOpen(activity) : toggleActivityClose(activity))}
+                style={{ margin: '0.5em' }}
+              >
+                {activity.closed ? 'Open' : 'Close'}
+              </button>
             </Card3>
           ))}
         </ul>
