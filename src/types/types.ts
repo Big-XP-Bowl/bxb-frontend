@@ -16,6 +16,7 @@ interface IActivity {
   isReserved: boolean;
   duration: number;
   isClosed: boolean;
+  closed: boolean;
   dtype: string;
   type: string;
 }

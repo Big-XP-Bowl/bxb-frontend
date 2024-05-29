@@ -54,6 +54,7 @@ const GridTop = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   width: 100%;
   gap: 1rem;
+  margin-bottom: 1rem;
   `;
 
 const GridCalendarToolbar = styled.div`

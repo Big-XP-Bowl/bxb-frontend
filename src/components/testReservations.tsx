@@ -15,7 +15,7 @@ const localizer = momentLocalizer(moment);
 
 const TestReservations: React.FC = () => {
   const { reservations, isLoading } = useReservations();
-  const { activities, updateActivity, setActivities } = useActivities();
+  const { activities, updateActivity, fetchActivities } = useActivities();  // Use fetchActivities instead of setActivities directly
   const [date, setDate] = useState<Date>(new Date());
   const [selectedActivityType, setSelectedActivityType] = useState<string>('');
   const [availableActivities, setAvailableActivities] = useState<IActivity[]>([]);
@@ -34,7 +34,14 @@ const TestReservations: React.FC = () => {
   }, [reservations, isLoading]);
 
   useEffect(() => {
-  }, [activities]);
+    // Filter available activities based on selected activity type whenever activities change
+    if (selectedActivityType) {
+      const filteredActivities = activities.filter((activity: IActivity) => activity.type === selectedActivityType);
+      setAvailableActivities(filteredActivities);
+    }
+  }, [activities, selectedActivityType]);
+
+  
 
   const handleActivityTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedType = event.target.value;
@@ -47,17 +54,29 @@ const TestReservations: React.FC = () => {
     setAvailableActivities(filteredActivities);
   };
 
-  const toggleActivityIsClosed = async (activity: IActivity) => {
-    const updatedActivity = { ...activity, isClosed: !activity.isClosed };
+const toggleActivityClose = async (activity: IActivity) => {
+  const updatedActivity = { ...activity, isClosed: true };
+  
+  try {
+    await updateActivity(activity.id, updatedActivity);
+    console.log(updatedActivity)
+    toast.success(`Activity closed successfully`);
+    await fetchActivities();
+  } catch (error) {
+    toast.error('Error updating activity');
+  }
+};
+  const toggleActivityOpen = async (activity: IActivity) => {
+    const updatedActivity = { ...activity, isClosed: false };
     
     try {
       await updateActivity(activity.id, updatedActivity);
-      toast.success(`Activity ${updatedActivity.isClosed ? 'closed' : 'opened'} successfully`);
-      setActivities(activities);
+      console.log(updatedActivity)
+      toast.success(`Activity opened successfully`);
+      await fetchActivities();  
     } catch (error) {
       toast.error('Error updating activity');
     }
-    
   };
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
@@ -211,7 +230,8 @@ const TestReservations: React.FC = () => {
       <h2>Tilgængelige aktiviteter {selectedSlot ? moment(selectedSlot).format('dddd') : ''} d. {selectedSlot ? moment(selectedSlot).format('DD/MM/YYYY') : ''} kl. {selectedSlot ? moment(selectedSlot).format('HH:mm') : ''}</h2>
         <ul>
           {availableActivities.map((activity) => (
-            <Card3 key={activity.id}>
+            <Card3 key={activity.id} style={{ backgroundColor: activity.closed ? '#f9abab' : '#abf9ab' }}>
+
               <Card3Title>{activity.name}</Card3Title>
               {activity.type === 'Airhockey' && (
                 <>
@@ -233,9 +253,13 @@ const TestReservations: React.FC = () => {
                   <Card3Details>4 - 8 personer | 90 min.</Card3Details>
                 </>
               )}
-              <button onClick={() => toggleActivityIsClosed(activity)}>
-                {activity.isClosed ? 'Open' : 'Close'}
-              </button>
+
+<button
+  onClick={() => (activity.closed ? toggleActivityOpen(activity) : toggleActivityClose(activity))}
+  style={{ margin: '0.5em' }}
+>
+  {activity.closed ? 'Open' : 'Close'}
+</button>
             </Card3>
           ))}
         </ul>

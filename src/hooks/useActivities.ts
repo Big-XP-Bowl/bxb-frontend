@@ -53,7 +53,7 @@ export default function useActivities() {
       if (error instanceof HttpException) {
         toast.error(error.message);
       } else {
-        toast.error('En uventet fejl opstod');
+        toast.error('An unexpected error occurred');
       }
     }
   };
