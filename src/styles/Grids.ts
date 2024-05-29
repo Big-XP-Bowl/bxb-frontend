@@ -51,7 +51,7 @@ const Grid2 = styled.div`
 
 const GridTop = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   width: 100%;
   gap: 1rem;
   `;
