@@ -1,10 +1,9 @@
 import { useState } from "react";
-//import { useLocation } from "react-router-dom";
-//import { useAuth } from "./_Authprovider";
 import { User } from "../hooks/authHook";
 import "./loginLayout.css";
 import { useAuth } from "./AuthProvider";
 import { useLocation, useNavigate } from "react-router-dom";
+import { PageLayout } from "../styles/PageLayout";
 
 const Login = () => {
   const [user, setUser] = useState({ username: "", password: "" });
@@ -26,8 +25,7 @@ const Login = () => {
     setErr(null);
     console.log(err);
     console.log("Logged in user:", user.username);
-    alert("Login: " + JSON.stringify(user));
-    
+
     auth
       .signIn(user)
       .then(() => {
@@ -39,6 +37,7 @@ const Login = () => {
   }
 
   return (
+    <PageLayout>
     <div className="login-wrapper">
       <form className="login-form" onSubmit={handleSubmit}>
         <h2>Login</h2>
@@ -48,7 +47,9 @@ const Login = () => {
             type="text"
             name="username"
             value={user.username}
-            onChange={(e) => setUser((prev) => ({ ...prev, username: e.target.value }))}
+            onChange={(e) =>
+              setUser((prev) => ({ ...prev, username: e.target.value }))
+            }
             required
           />
         </div>
@@ -58,7 +59,9 @@ const Login = () => {
             type="password"
             name="password"
             value={user.password}
-            onChange={(e) => setUser((prev) => ({ ...prev, password: e.target.value }))}
+            onChange={(e) =>
+              setUser((prev) => ({ ...prev, password: e.target.value }))
+            }
             required
           />
         </div>
@@ -67,8 +70,8 @@ const Login = () => {
         </button>
       </form>
     </div>
+    </PageLayout>
   );
 };
 
 export default Login;
-

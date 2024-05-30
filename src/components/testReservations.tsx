@@ -1,20 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { FaChild } from "react-icons/fa";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import useReservations from '../hooks/useReservations';
 import useActivities from '../hooks/useActivities';
-import { IActivity } from '../types/types';
+import { IActivity, IBowlingLane } from '../types/types';
 import { Toaster } from 'react-hot-toast';
 import { PageLayout } from '../styles/PageLayout';
 import styled from 'styled-components';
 import { GridCalendarToolbar } from '../styles/Grids';
+import { toast } from 'react-hot-toast';
 
 const localizer = momentLocalizer(moment);
 
 const TestReservations: React.FC = () => {
   const { reservations, isLoading } = useReservations();
-  const { activities } = useActivities(); // Call useActivities only once
+  const { activities, updateActivity, fetchActivities } = useActivities();
   const [date, setDate] = useState<Date>(new Date());
   const [selectedActivityType, setSelectedActivityType] = useState<string>('');
   const [availableActivities, setAvailableActivities] = useState<IActivity[]>([]);
@@ -33,8 +35,13 @@ const TestReservations: React.FC = () => {
   }, [reservations, isLoading]);
 
   useEffect(() => {
-  }, [activities]);
+    if (selectedActivityType) {
+      const filteredActivities = activities.filter((activity: IActivity) => activity.type === selectedActivityType);
+      setAvailableActivities(filteredActivities);
+    }
+  }, [activities, selectedActivityType]);
 
+  
   const handleActivityTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedType = event.target.value;
     setSelectedActivityType(selectedType);
@@ -46,34 +53,70 @@ const TestReservations: React.FC = () => {
     setAvailableActivities(filteredActivities);
   };
 
+const toggleActivityClose = async (activity: IActivity) => {
+  const updatedActivity = { ...activity, isClosed: true };
+  
+  try {
+    await updateActivity(activity.id, updatedActivity);
+    console.log(updatedActivity)
+    toast.success(`Activity closed successfully`);
+    await fetchActivities();
+  } catch (error) {
+    toast.error('Error updating activity');
+  }
+};
+  const toggleActivityOpen = async (activity: IActivity) => {
+    const updatedActivity = { ...activity, isClosed: false };
+    
+    try {
+      await updateActivity(activity.id, updatedActivity);
+      console.log(updatedActivity)
+      toast.success(`Activity opened successfully`);
+      await fetchActivities();  
+    } catch (error) {
+      toast.error('Error updating activity');
+    }
+  };
+
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     setSelectedSlot(slotInfo.start);
-    
+  
     if (selectedActivityType) {
       console.log('Selected activity type:', selectedActivityType);
-
-      const filteredActivities = activities.filter((activity: IActivity) => activity.type === selectedActivityType);
-
-      console.log('Filtered activities:', filteredActivities);
-
-      const availableFilteredActivities = filteredActivities.filter((filteredActivity) => {
-        const hasReservation = reservations.some((reservation) => {
   
-          const slotStartTime = moment(slotInfo.start).format('YYYY-MM-DDTHH:mm:ss');
-          const reservationStartTime = moment(reservation.startTime).format('YYYY-MM-DDTHH:mm:ss');
-
-          // Check if the reservation's activityId matches the ID of the filtered activity
-          // and if the reservation start time is equal to the slot start time
-          return reservation.activityId === filteredActivity.id && reservationStartTime === slotStartTime;
+      const filteredActivities = activities.filter((activity: IActivity) => activity.type === selectedActivityType);
+  
+      console.log('Filtered activities:', filteredActivities);
+  
+      let availableFilteredActivities = [];
+  
+      if (moment(slotInfo.start).format('HH:mm:ss') === '00:00:00') {
+        // If slot start time is 00:00, render all selected activities without filtering closed ones
+        availableFilteredActivities = filteredActivities;
+      } else {
+        availableFilteredActivities = filteredActivities.filter((filteredActivity) => {
+          const hasReservation = reservations.some((reservation) => {
+            const slotStartTime = moment(slotInfo.start).format('YYYY-MM-DDTHH:mm:ss');
+            const reservationStartTime = moment(reservation.startTime).format('YYYY-MM-DDTHH:mm:ss');
+  
+            // Check if the reservation's activityId matches the ID of the filtered activity
+            // and if the reservation start time is equal to the slot start time
+            return reservation.activityId === filteredActivity.id && reservationStartTime === slotStartTime;
+          });
+  
+          return !hasReservation;
         });
-
-        return !hasReservation;
-      });
-
-      setAvailableActivities(availableFilteredActivities);      
+  
+        // Filter out closed activities for non-00:00 slots
+        availableFilteredActivities = availableFilteredActivities.filter(activity => !activity.closed);
+      }
+  
+      // Set available activities
+      setAvailableActivities(availableFilteredActivities);
       scrollToAvailableActivities();
     }
   };
+  
 
   const scrollToAvailableActivities = () => {
     if (availableActivitiesRef.current) {
@@ -81,28 +124,59 @@ const TestReservations: React.FC = () => {
     }
   };
 
+  function isBowlingLane(activity: IActivity): activity is IBowlingLane {
+    return activity.type === 'BowlingLane';
+  }
+
   const slotPropGetter = (date: Date) => {
-    if (selectedSlot && moment(date).isSame(selectedSlot, 'minute')) {
-      return {
-        style: {
-          backgroundColor: '#f9abab',
-        },
-      };
+    if (!selectedActivityType) return {};
+  
+    // Check if the slot is part of the time gutter column
+    const isTimeGutter = date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
+    if (isTimeGutter) {
+      return {}; // Return an empty object to leave the time gutter cells unaffected
     }
-    return {};
+  
+    const totalActivities = activities.filter(activity => activity.type === selectedActivityType).length;
+    if (totalActivities === 0) return {};
+  
+    const reservationsAtSlot = reservations.filter(reservation =>
+      moment(reservation.startTime).isSame(date, 'minute') &&
+      activities.some(activity => activity.id === reservation.activityId && activity.type === selectedActivityType)
+    ).length;
+  
+    const reservedPercentage = (reservationsAtSlot / totalActivities) * 100;
+  
+    let backgroundColor = '';
+    if (reservedPercentage > 60) {
+      backgroundColor = '#f9abab'; // Red
+    } else if (reservedPercentage > 40) {
+      backgroundColor = '#f9f3ab'; // Yellow
+    } else {
+      backgroundColor = '#abf9ab'; // Green
+    }
+  
+    return {
+      style: {
+        backgroundColor,
+      },
+    };
   };
 
   interface ToolbarNavigation {
-    (action: string, date?: Date): void; // Function signature with optional date argument
+    (action: string, date?: Date): void;
   }
 
   const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: ToolbarNavigation }) => {
     return (
-      <div>
-        <span>{label}</span>
-        <button onClick={() => onNavigate('TODAY')}>Today</button>
-        <button onClick={() => onNavigate('PREV')}>Previous</button>
-        <button onClick={() => onNavigate('NEXT')}>Next</button>
+      <>
+      <div >
+        <span style={{margin: '0.5em', fontSize: '22px', fontWeight: 'bold'}}>{label}</span>
+        </div>
+        <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr"}}>
+        <button onClick={() => onNavigate('TODAY')} style={{margin: '0.5em'}}>Today</button>
+        <button onClick={() => onNavigate('PREV')}style={{margin: '0.5em'}}>Previous</button>
+        <button onClick={() => onNavigate('NEXT')}style={{margin: '0.5em'}}>Next</button>
         <select
           name="activityType"
           value={selectedActivityType}
@@ -113,7 +187,8 @@ const TestReservations: React.FC = () => {
           <option value="DiningTable">Restaurant</option>
           <option value="BowlingLane">Bowling</option>
         </select>
-      </div>
+        </div>
+        </>
     );
   };
 
@@ -172,9 +247,13 @@ const TestReservations: React.FC = () => {
       />
       <div ref={availableActivitiesRef}>
       <h2>Tilgængelige aktiviteter {selectedSlot ? moment(selectedSlot).format('dddd') : ''} d. {selectedSlot ? moment(selectedSlot).format('DD/MM/YYYY') : ''} kl. {selectedSlot ? moment(selectedSlot).format('HH:mm') : ''}</h2>
+
         <ul>
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', paddingBottom: '5em'}}>
           {availableActivities.map((activity) => (
-            <Card3 key={activity.id}>
+            
+            <Card3 key={activity.id} style={{ backgroundColor: activity.closed ? '#f9abab' : '#abf9ab' }}>
+
               <Card3Title>{activity.name}</Card3Title>
               {activity.type === 'Airhockey' && (
                 <>
@@ -196,9 +275,23 @@ const TestReservations: React.FC = () => {
                   <Card3Details>4 - 8 personer | 90 min.</Card3Details>
                 </>
               )}
+                {moment(selectedSlot).format('HH:mm') === '00:00' && (
+                  <button
+                    onClick={() => (activity.closed ? toggleActivityOpen(activity) : toggleActivityClose(activity))}
+                    style={{ margin: '0.5em' }}
+                  >
+                    {activity.closed ? 'Open' : 'Close'}
+                  </button>
+                )}
+                {moment(selectedSlot).format('HH:mm') !== '00:00' && (
+                  <button>Opret Reservation</button>)}
+
+                {isBowlingLane(activity) && activity.childFriendly && <FaChild />} 
             </Card3>
           ))}
+            </div>
         </ul>
+      
       </div>
     </PageLayout>
   );

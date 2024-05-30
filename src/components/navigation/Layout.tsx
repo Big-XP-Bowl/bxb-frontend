@@ -1,3 +1,4 @@
+import Footer from "./Footer";
 import NavHeader from "./NavHeader";
 
 type LayoutProps = {
@@ -11,6 +12,7 @@ const Layout = ({ children }: LayoutProps) => {
         <NavHeader />
       </header>
       <main className="page-content">{children}</main>
+        <Footer />
     </div>
   );
 };

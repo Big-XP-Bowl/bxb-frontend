@@ -110,7 +110,7 @@ const Products: React.FC = () => {
               <Card2Breakline />
 
               {/* Knapper til at håndtere produkter, kun synlig for manager og bar-medlemmer */}
-              {isLoggedInAs(["ADMIN", "BAR", "USER"]) && (
+              {isLoggedInAs(["ADMIN", "BAR"]) && (
                 <>
                   <button onClick={() => handleAddToCart(product.id)}>Add to cart</button>
                   <button onClick={() => handleRemoveFromCart(product.id)}>Remove from cart</button>
@@ -121,7 +121,6 @@ const Products: React.FC = () => {
             </Card2>
           ))}
         </Grid1>
-  
 
         {/* Kurven vises kun for manager og bar-medlemmer */}
         {isLoggedInAs(["ADMIN", "BAR", "USER"]) && (
@@ -153,50 +152,84 @@ const Products: React.FC = () => {
         )}
 
         {/* Modal for at oprette/redigere produkter, kun synlig for manager og bar-medlemmer */}
-        {showModal && isLoggedInAs(["ADMIN", "USER", "BAR",]) && (
+        {showModal && isLoggedInAs(["ADMIN", "USER", "BAR"]) && (
           <Modal>
-            <FormContainer>
+            <FormContainer
+              onSubmit={editProduct ? handleUpdateProduct : handleCreateProduct}
+            >
               {/* Form til oprettelse/redigering af produkter */}
               <h2>{editProduct ? "Edit Product" : "Create Product"}</h2>
-              <form onSubmit={editProduct ? handleUpdateProduct : handleCreateProduct}>
-                <InputContainer>
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={editProduct ? editProduct.name : newProduct.name}
-                    onChange={(e) => editProduct ? setEditProduct({ ...editProduct, name: e.target.value }) : setNewProduct({ ...newProduct, name: e.target.value })}
-                    required
-                  />
-                </InputContainer>
-                <InputContainer>
-                  <Label htmlFor="price">Price</Label>
-                  <Input
-                    type="number"
-                    id="price"
-                    name="price"
-                    value={editProduct ? editProduct.price : newProduct.price}
-                    onChange={(e) => editProduct ? setEditProduct({ ...editProduct, price: parseFloat(e.target.value) }) : setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
-                    required
-                  />
-                </InputContainer>
-                <InputContainer>
-                  <Label htmlFor="imageUrl">Image URL</Label>
-                  <Input
-                    type="text"
-                    id="imageUrl"
-                    name="imageUrl"
-                    value={editProduct ? editProduct.imageUrl : newProduct.imageUrl}
-                    onChange={(e) => editProduct ? setEditProduct({ ...editProduct, imageUrl: e.target.value }) : setNewProduct({ ...newProduct, imageUrl: e.target.value })}
-                    required
-                  />
-                </InputContainer>
-                <ButtonContainer>
-                  <button type="submit">{editProduct ? "Update" : "Create"}</button>
-                  <button type="button" onClick={handleCloseModal}>Cancel</button>
-                </ButtonContainer>
-              </form>
+
+              <InputContainer>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={editProduct ? editProduct.name : newProduct.name}
+                  onChange={(e) =>
+                    editProduct
+                      ? setEditProduct({
+                          ...editProduct,
+                          name: e.target.value,
+                        })
+                      : setNewProduct({ ...newProduct, name: e.target.value })
+                  }
+                  required
+                />
+              </InputContainer>
+              <InputContainer>
+                <Label htmlFor="price">Price</Label>
+                <Input
+                  type="number"
+                  id="price"
+                  name="price"
+                  value={editProduct ? editProduct.price : newProduct.price}
+                  onChange={(e) =>
+                    editProduct
+                      ? setEditProduct({
+                          ...editProduct,
+                          price: parseFloat(e.target.value),
+                        })
+                      : setNewProduct({
+                          ...newProduct,
+                          price: parseFloat(e.target.value),
+                        })
+                  }
+                  required
+                />
+              </InputContainer>
+              <InputContainer>
+                <Label htmlFor="imageUrl">Image URL</Label>
+                <Input
+                  type="text"
+                  id="imageUrl"
+                  name="imageUrl"
+                  value={
+                    editProduct ? editProduct.imageUrl : newProduct.imageUrl
+                  }
+                  onChange={(e) =>
+                    editProduct
+                      ? setEditProduct({
+                          ...editProduct,
+                          imageUrl: e.target.value,
+                        })
+                      : setNewProduct({
+                          ...newProduct,
+                          imageUrl: e.target.value,
+                        })
+                  }
+                  required
+                />
+              </InputContainer>
+              <ButtonContainer>
+                <button type="submit">
+                  {editProduct ? "Update" : "Create"}
+                </button>
+                <button type="button" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+              </ButtonContainer>
             </FormContainer>
           </Modal>
         )}
@@ -204,6 +237,5 @@ const Products: React.FC = () => {
     </PageLayout>
   );
 };
-
 
 export default Products;
