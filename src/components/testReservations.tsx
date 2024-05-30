@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { FaChild } from "react-icons/fa";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import useReservations from '../hooks/useReservations';
 import useActivities from '../hooks/useActivities';
-import { IActivity } from '../types/types';
+import { IActivity, IBowlingLane } from '../types/types';
 import { Toaster } from 'react-hot-toast';
 import { PageLayout } from '../styles/PageLayout';
 import styled from 'styled-components';
@@ -15,7 +16,7 @@ const localizer = momentLocalizer(moment);
 
 const TestReservations: React.FC = () => {
   const { reservations, isLoading } = useReservations();
-  const { activities, updateActivity, fetchActivities } = useActivities();  // Use fetchActivities instead of setActivities directly
+  const { activities, updateActivity, fetchActivities } = useActivities();
   const [date, setDate] = useState<Date>(new Date());
   const [selectedActivityType, setSelectedActivityType] = useState<string>('');
   const [availableActivities, setAvailableActivities] = useState<IActivity[]>([]);
@@ -34,7 +35,6 @@ const TestReservations: React.FC = () => {
   }, [reservations, isLoading]);
 
   useEffect(() => {
-    // Filter available activities based on selected activity type whenever activities change
     if (selectedActivityType) {
       const filteredActivities = activities.filter((activity: IActivity) => activity.type === selectedActivityType);
       setAvailableActivities(filteredActivities);
@@ -123,6 +123,10 @@ const toggleActivityClose = async (activity: IActivity) => {
       availableActivitiesRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  function isBowlingLane(activity: IActivity): activity is IBowlingLane {
+    return activity.type === 'BowlingLane';
+  }
 
   const slotPropGetter = (date: Date) => {
     if (!selectedActivityType) return {};
@@ -281,6 +285,8 @@ const toggleActivityClose = async (activity: IActivity) => {
                 )}
                 {moment(selectedSlot).format('HH:mm') !== '00:00' && (
                   <button>Opret Reservation</button>)}
+
+                {isBowlingLane(activity) && activity.childFriendly && <FaChild />} 
             </Card3>
           ))}
             </div>

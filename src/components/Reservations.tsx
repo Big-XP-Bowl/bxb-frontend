@@ -74,6 +74,7 @@ const Reservations = () => {
   const [sortedAscending, setSortedAscending] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(30);
+  const [isChildFriendly, setIsChildFriendly] = useState(false);
   
   useEffect(() => {
     setCurrentPage(1); // Reset currentPage to 1 when searchQuery changes
@@ -223,7 +224,11 @@ const Reservations = () => {
         </option>
       ));
     } else if (selectedActivityType === "BowlingLane") {
-      return bowlingLanes.map((activity) => (
+      const lanesToRender = isChildFriendly
+        ? bowlingLanes.filter((lane) => lane.childFriendly)
+        : bowlingLanes;
+
+      return lanesToRender.map((activity) => (
         <option key={activity.id} value={activity.id}>
           {activity.name}
         </option>
@@ -403,6 +408,16 @@ const Reservations = () => {
                     <option value="BowlingLane">Bowling</option>
                   </select>
                 </Label>
+                {selectedActivityType === "BowlingLane" && (
+                <Label>
+                  Børnevenlig:
+                  <Input
+                    type="checkbox"
+                    checked={isChildFriendly}
+                    onChange={(e) => setIsChildFriendly(e.target.checked)}
+                  />
+                </Label>
+              )}
                 {selectedActivityType && (
                   <Label>
                     Specifikation:
