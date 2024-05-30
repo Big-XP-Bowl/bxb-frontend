@@ -1,70 +1,97 @@
+import React, { useState } from "react";
 import { Link } from "react-scroll";
 import { useAuth } from "../../security/AuthProvider";
-import Nav from "../../styles/Nav";
-import { FaBowlingBall } from "react-icons/fa";
+import { FaBowlingBall, FaBars, FaTimes } from "react-icons/fa";
 import { NavLink, useLocation } from "react-router-dom";
 import BowlingColors from "../../styles/BowlingColors";
+import Nav from "../../styles/Nav"; // Ensure the correct import path
+
 export default function NavHeader() {
   const auth = useAuth();
   const location = useLocation();
   const myLocation = location.pathname;
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
   return (
-    <Nav>
+    <Nav menuOpen={menuOpen}>
       <nav>
         <NavLink to="/">
           <FaBowlingBall size={35} color={BowlingColors.SecondaryColor} />
         </NavLink>
-        <ul>
+        <div className="menu-icon" onClick={toggleMenu}>
+          {menuOpen ? (
+            <FaTimes size={35} color={BowlingColors.SecondaryColor} />
+          ) : (
+            <FaBars size={35} color={BowlingColors.SecondaryColor} />
+          )}
+        </div>
+        <ul className={menuOpen ? "nav-menu active" : "nav-menu"}>
           <li>
-            {/* depending on the const myLocation this is either a Link or a NavLink */}
-            {/* if the user is on homepage, then they are Link. If they are on any other location, then it's a NavLink */}
             {myLocation === "/" ? (
               <Link
                 to="activities"
                 smooth={true}
                 duration={666}
                 style={{ cursor: "pointer" }}
+                onClick={toggleMenu}
               >
                 Aktiviteter
               </Link>
             ) : (
-              <NavLink to="/activities">Aktiviteter</NavLink>
+              <NavLink to="/activities" onClick={toggleMenu}>
+                Aktiviteter
+              </NavLink>
             )}
           </li>
           <li>
-            {/* depending on myLocation, the user is clicking either Link or NavLink */}
             {myLocation === "/" ? (
               <Link
                 to="about"
                 smooth={true}
                 duration={666}
                 style={{ cursor: "pointer" }}
+                onClick={toggleMenu}
               >
                 Om os
               </Link>
             ) : (
-              <NavLink to="/about">Om os</NavLink>
+              <NavLink to="/about" onClick={toggleMenu}>
+                Om os
+              </NavLink>
             )}
           </li>
           <li>
-            <NavLink to="/products">Produkter</NavLink>
+            <NavLink to="/products" onClick={toggleMenu}>
+              Produkter
+            </NavLink>
           </li>
           {!auth.isLoggedIn() && (
             <li>
-              <NavLink to="/login">Medarbejderside</NavLink>
+              <NavLink to="/login" onClick={toggleMenu}>
+                Medarbejderside
+              </NavLink>
             </li>
           )}
           {auth.isLoggedIn() && (
             <>
               <li>
-                <NavLink to="/admin">Admin</NavLink>
+                <NavLink to="/admin" onClick={toggleMenu}>
+                  Admin
+                </NavLink>
               </li>
               <li>
-                <NavLink to="/reservations">Reservationer</NavLink>
+                <NavLink to="/reservations" onClick={toggleMenu}>
+                  Reservationer
+                </NavLink>
               </li>
               <li>
-                <NavLink to="/logout">Log ud</NavLink>
+                <NavLink to="/logout" onClick={toggleMenu}>
+                  Log ud
+                </NavLink>
               </li>
             </>
           )}
