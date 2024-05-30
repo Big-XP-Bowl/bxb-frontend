@@ -3,7 +3,7 @@ import useShoes from '../hooks/useShoes';
 import usePins from '../hooks/usePins';
 
 const Maintenance: React.FC = () => {
-  const { shoes, createShoe, deleteShoe } = useShoes();
+  const { shoes, createShoe, deleteShoeBySize } = useShoes();
   const { pins, createPin, deletePin } = usePins();
   const [pinCount, setPinCount] = useState<number>(0);
   const [shoeSize, setShoeSize] = useState<number>(0);
@@ -16,18 +16,22 @@ const Maintenance: React.FC = () => {
     setShoeSize(parseInt(event.target.value));
   };
 
-  const reportMissingPins = () => {
+  const reportMissingPins = async () => {
     console.log(`Reporting ${pinCount} missing pins`);
-    deletePin(pinCount); // Slet det angivne antal pins
+    for (let i = 0; i < pinCount; i++) {
+      await deletePin(i); // Assuming deletePin deletes the first pin found or needs an ID
+    }
   };
 
-  const orderNewPins = () => {
-    createPin({ id: pinCount });
+  const orderNewPins = async () => {
+    for (let i = 0; i < pinCount; i++) {
+      await createPin({ id: pins.length + i + 1 }); // Assuming IDs are sequential and new pins get next ID
+    }
   };
 
   const reportMissingShoes = () => {
     console.log(`Reporting shoes of size ${shoeSize} missing`);
-    deleteShoe(shoeSize); // Slet sko af den angivne størrelse
+    deleteShoeBySize(shoeSize); // Slet sko af den angivne størrelse
   };
 
   const orderNewShoes = () => {

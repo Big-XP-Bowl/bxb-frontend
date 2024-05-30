@@ -48,22 +48,24 @@ function useShoes() {
         }
     };
 
-    const deleteShoe = async (id: number) => {
+    const deleteShoeBySize = async (size: number) => {
         try {
-            console.log("Deleting shoe with ID:", id); // Tilføj denne linje
+            console.log("Deleting shoe with size:", size);
             const options = makeOptions('DELETE', null);
-            const res = await fetch(SHOE_URL + '/' + id, options);
+            const res = await fetch(`${SHOE_URL}/size/${size}`, options);
             await handleHttpErrors(res);
-            setShoes(prev => prev.filter(shoe => shoe.id !== id));
+            setShoes(prev => prev.filter(shoe => shoe.size !== size));
             toast.success('Skoen blev slettet');
         } catch (error) {
             if (error instanceof HttpException) {
                 toast.error(error.message);
+            } else {
+                toast.error('En uventet fejl opstod');
             }
         }
     };
 
-    return { shoes, loading, createShoe, deleteShoe };
+    return { shoes, loading, createShoe, deleteShoeBySize };
 }
 
 export default useShoes;
