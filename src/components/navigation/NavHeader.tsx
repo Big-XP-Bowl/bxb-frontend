@@ -24,9 +24,9 @@ export default function NavHeader() {
         </NavLink>
         <div className="menu-icon" onClick={toggleMenu}>
           {menuOpen ? (
-            <FaTimes size={35} color={BowlingColors.SecondaryColor} />
+            <FaTimes size={20} color={BowlingColors.SecondaryColor} />
           ) : (
-            <FaBars size={35} color={BowlingColors.SecondaryColor} />
+            <FaBars size={20} color={BowlingColors.SecondaryColor} />
           )}
         </div>
         <ul className={menuOpen ? "nav-menu active" : "nav-menu"}>
