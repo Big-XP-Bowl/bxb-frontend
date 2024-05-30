@@ -16,6 +16,7 @@ import TestReservations from "./components/testReservations";
 import Login from "./security/Login";
 import { Route, Routes } from "react-router-dom";
 import LogoutComponent from "./security/Logout";
+import FullReservation from "./components/reservation/FullReservations";
 
 // routes here!
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/activities" element={<Activities />} />
           <Route path="/reservations" element={<Reservations />} />
           <Route path="/test-reservations" element={<TestReservations />} />
+          <Route path="/fullreservation" element={<FullReservation />} />
           <Route path="/employees" element={<Employees />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/maintenance" element={<Maintenance />} />
