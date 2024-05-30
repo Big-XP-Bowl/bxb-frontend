@@ -1,12 +1,14 @@
+import React from "react";
 import { Link } from "react-scroll";
 import { useAuth } from "../../security/AuthProvider";
 import Nav from "../../styles/Nav";
 import { FaBowlingBall } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import BowlingColors from "../../styles/BowlingColors";
 
 export default function NavHeader() {
   const auth = useAuth();
+  const location = useLocation();
 
   return (
     <Nav>
@@ -16,30 +18,25 @@ export default function NavHeader() {
         </NavLink>
         <ul>
           <li>
-            <Link
-              to="activities"
-              smooth={true}
-              duration={500}
-              style={{ cursor: "pointer" }}
-            >
-              Alle aktiviter
-            </Link>
+            {location.pathname === "/" ? (
+              <Link to="activities" smooth={true} duration={500} style={{ cursor: "pointer" }}>
+                Alle aktiviteter
+              </Link>
+            ) : (
+              <NavLink to="/">Alle aktiviteter</NavLink>
+            )}
           </li>
           <li>
-            <NavLink to="/products"
-            >
-              Produkter
-            </NavLink>
+            <NavLink to="/products">Produkter</NavLink>
           </li>
           <li>
-            <Link
-              to="about"
-              smooth={true}
-              duration={500}
-              style={{ cursor: "pointer" }}
-            >
-              About
-            </Link>
+            {location.pathname === "/" ? (
+              <Link to="about" smooth={true} duration={500} style={{ cursor: "pointer" }}>
+                About
+              </Link>
+            ) : (
+              <NavLink to="/">About</NavLink>
+            )}
           </li>
           {!auth.isLoggedIn() && (
             <li>
@@ -63,6 +60,4 @@ export default function NavHeader() {
       </nav>
     </Nav>
   );
-
-
 }
