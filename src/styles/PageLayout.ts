@@ -4,7 +4,8 @@ const PageLayout = styled.div`
   height: 100vh;
   justify-content: center;
   align-items: center;
-  padding: 5rem;
+  padding: 5em;
+  padding-bottom: 60em;
 `;
 
 const ContentGrid = styled.div`

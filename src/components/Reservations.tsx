@@ -71,7 +71,13 @@ const Reservations = () => {
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("startTime");
-  const [sortedAscending, setSortedAscending] = useState<boolean>(true); 
+  const [sortedAscending, setSortedAscending] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(30);
+  
+  useEffect(() => {
+    setCurrentPage(1); // Reset currentPage to 1 when searchQuery changes
+  }, [searchQuery]);
 
   useEffect(() => {
     if (username) {
@@ -225,9 +231,12 @@ const Reservations = () => {
     }
     return null;
   };
+  
 
   const filteredReservations = reservations.filter((reservation) =>
-    reservation.customerPhone.includes(searchQuery)
+    reservation.customerPhone.includes(searchQuery) ||
+    reservation.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+    
   );
 
   const sortedReservations = [...filteredReservations].sort((a, b) => {
@@ -239,9 +248,44 @@ const Reservations = () => {
     return 0;
   });
 
+
   const toggleSortDirection = () => {
     setSortedAscending((prev) => !prev);
   };
+
+  const parseTime = (dateTime: Date): string => {
+    const timeZone = 'Europe/Copenhagen';
+  
+    // Format the date as dd/MM/yyyy
+    const formattedDate = formatInTimeZone(dateTime, timeZone, 'dd/MM/yyyy');
+  
+    // Format the time as hh:mm
+    const formattedTime = formatInTimeZone(dateTime, timeZone, 'HH:mm');
+  
+    // Concatenate the formatted date and time with "kl." in between
+    return `${formattedDate} kl. ${formattedTime}`;
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentReservations = sortedReservations.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  // Total number of pages
+  const totalPages = Math.ceil(sortedReservations.length / itemsPerPage);
+
+  // Next page handler
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  // Previous page handler
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+  
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -253,7 +297,7 @@ const Reservations = () => {
         <h2>Reservationer</h2>
         <input
           type="text"
-          placeholder="Search by phone number"
+          placeholder="Search by phone number or customer name"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -283,38 +327,50 @@ const Reservations = () => {
             </tr>
           </TableHeader>
           <tbody>
-            {isLoading && (
-              <tr>
-                <td>Loading...</td>
-              </tr>
-            )}
-            {filteredReservations.map && sortedReservations.map((reservation) => (
-              <TableRow key={reservation.id}>
-                <TableData>{reservation.id}</TableData>
-                <TableData>{reservation.startTime}</TableData>
-                <TableData>{reservation.partySize}</TableData>
-                <TableData>{reservation.customerName}</TableData>
-                <TableData>{reservation.customerPhone}</TableData>
-                <TableData>
-                  {reservation.activityId && (
-                    <>{<ActivityTypeRenderer reservation={reservation} />}</>
-                  )}
-                </TableData>
-                <TableData>
-                  <FaPen
-                    style={{ marginRight: "5px", cursor: "pointer" }}
-                    onClick={() => handleUpdateReservation(reservation)}
-                  />
-                  <FaTrash
-                    style={{ marginRight: "5px", cursor: "pointer" }}
-                    onClick={() => handleDeleteReservation(reservation)}
-                  />
-                </TableData>
-              </TableRow>
-            ))}
-          </tbody>
+  {isLoading && (
+    <tr>
+      <td>Loading...</td>
+    </tr>
+  )}
+  {filteredReservations.map &&
+    currentReservations.map((reservation) => (
+      <TableRow key={reservation.id}>
+        <TableData>{reservation.id}</TableData>
+        <TableData>
+          {parseTime(new Date(reservation.startTime))}
+        </TableData>
+        <TableData>{reservation.partySize}</TableData>
+        <TableData>{reservation.customerName}</TableData>
+        <TableData>{reservation.customerPhone}</TableData>
+        <TableData>
+          {reservation.activityId && (
+            <>{<ActivityTypeRenderer reservation={reservation} />}</>
+          )}
+        </TableData>
+        <TableData>
+          <FaPen
+            style={{ marginRight: "5px", cursor: "pointer" }}
+            onClick={() => handleUpdateReservation(reservation)}
+          />
+          <FaTrash
+            style={{ marginRight: "5px", cursor: "pointer" }}
+            onClick={() => handleDeleteReservation(reservation)}
+          />
+        </TableData>
+      </TableRow>
+    ))}
+</tbody>
         </TableLarge>
       </TableWrapper>
+      <div>
+      <button onClick={handlePrevPage} disabled={currentPage === 1}>
+        Previous
+      </button>
+      <span>Page {currentPage} of {totalPages}</span>
+      <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        Next
+      </button>
+    </div>
       {showAddForm && (
         <Modal>
           <FormContainer onSubmit={formData.id ? handleFormUpdate : handleAddReservation} >

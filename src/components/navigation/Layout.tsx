@@ -12,17 +12,7 @@ const Layout = ({ children }: LayoutProps) => {
         <NavHeader />
       </header>
       <main className="page-content">{children}</main>
-      <div
-        id="footer-container"
-        style={{
-          position: "fixed",
-          bottom: 0,
-          width: "100%",
-          height: "5%",
-        }}
-      >
         <Footer />
-      </div>
     </div>
   );
 };

@@ -42,7 +42,6 @@ const TestReservations: React.FC = () => {
   }, [activities, selectedActivityType]);
 
   
-
   const handleActivityTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedType = event.target.value;
     setSelectedActivityType(selectedType);
@@ -81,31 +80,43 @@ const toggleActivityClose = async (activity: IActivity) => {
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     setSelectedSlot(slotInfo.start);
-    
+  
     if (selectedActivityType) {
       console.log('Selected activity type:', selectedActivityType);
-
+  
       const filteredActivities = activities.filter((activity: IActivity) => activity.type === selectedActivityType);
-
+  
       console.log('Filtered activities:', filteredActivities);
-
-      const availableFilteredActivities = filteredActivities.filter((filteredActivity) => {
-        const hasReservation = reservations.some((reservation) => {
-          const slotStartTime = moment(slotInfo.start).format('YYYY-MM-DDTHH:mm:ss');
-          const reservationStartTime = moment(reservation.startTime).format('YYYY-MM-DDTHH:mm:ss');
-
-          // Check if the reservation's activityId matches the ID of the filtered activity
-          // and if the reservation start time is equal to the slot start time
-          return reservation.activityId === filteredActivity.id && reservationStartTime === slotStartTime;
+  
+      let availableFilteredActivities = [];
+  
+      if (moment(slotInfo.start).format('HH:mm:ss') === '00:00:00') {
+        // If slot start time is 00:00, render all selected activities without filtering closed ones
+        availableFilteredActivities = filteredActivities;
+      } else {
+        availableFilteredActivities = filteredActivities.filter((filteredActivity) => {
+          const hasReservation = reservations.some((reservation) => {
+            const slotStartTime = moment(slotInfo.start).format('YYYY-MM-DDTHH:mm:ss');
+            const reservationStartTime = moment(reservation.startTime).format('YYYY-MM-DDTHH:mm:ss');
+  
+            // Check if the reservation's activityId matches the ID of the filtered activity
+            // and if the reservation start time is equal to the slot start time
+            return reservation.activityId === filteredActivity.id && reservationStartTime === slotStartTime;
+          });
+  
+          return !hasReservation;
         });
-
-        return !hasReservation;
-      });
-
-      setAvailableActivities(availableFilteredActivities);      
+  
+        // Filter out closed activities for non-00:00 slots
+        availableFilteredActivities = availableFilteredActivities.filter(activity => !activity.closed);
+      }
+  
+      // Set available activities
+      setAvailableActivities(availableFilteredActivities);
       scrollToAvailableActivities();
     }
   };
+  
 
   const scrollToAvailableActivities = () => {
     if (availableActivitiesRef.current) {
@@ -133,9 +144,9 @@ const toggleActivityClose = async (activity: IActivity) => {
     const reservedPercentage = (reservationsAtSlot / totalActivities) * 100;
   
     let backgroundColor = '';
-    if (reservedPercentage > 50) {
+    if (reservedPercentage > 60) {
       backgroundColor = '#f9abab'; // Red
-    } else if (reservedPercentage > 25) {
+    } else if (reservedPercentage > 40) {
       backgroundColor = '#f9f3ab'; // Yellow
     } else {
       backgroundColor = '#abf9ab'; // Green
@@ -154,11 +165,14 @@ const toggleActivityClose = async (activity: IActivity) => {
 
   const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: ToolbarNavigation }) => {
     return (
-      <div>
-        <span>{label}</span>
-        <button onClick={() => onNavigate('TODAY')}>Today</button>
-        <button onClick={() => onNavigate('PREV')}>Previous</button>
-        <button onClick={() => onNavigate('NEXT')}>Next</button>
+      <>
+      <div >
+        <span style={{margin: '0.5em', fontSize: '22px', fontWeight: 'bold'}}>{label}</span>
+        </div>
+        <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr"}}>
+        <button onClick={() => onNavigate('TODAY')} style={{margin: '0.5em'}}>Today</button>
+        <button onClick={() => onNavigate('PREV')}style={{margin: '0.5em'}}>Previous</button>
+        <button onClick={() => onNavigate('NEXT')}style={{margin: '0.5em'}}>Next</button>
         <select
           name="activityType"
           value={selectedActivityType}
@@ -169,7 +183,8 @@ const toggleActivityClose = async (activity: IActivity) => {
           <option value="DiningTable">Restaurant</option>
           <option value="BowlingLane">Bowling</option>
         </select>
-      </div>
+        </div>
+        </>
     );
   };
 
@@ -228,8 +243,11 @@ const toggleActivityClose = async (activity: IActivity) => {
       />
       <div ref={availableActivitiesRef}>
       <h2>Tilgængelige aktiviteter {selectedSlot ? moment(selectedSlot).format('dddd') : ''} d. {selectedSlot ? moment(selectedSlot).format('DD/MM/YYYY') : ''} kl. {selectedSlot ? moment(selectedSlot).format('HH:mm') : ''}</h2>
+
         <ul>
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', paddingBottom: '5em'}}>
           {availableActivities.map((activity) => (
+            
             <Card3 key={activity.id} style={{ backgroundColor: activity.closed ? '#f9abab' : '#abf9ab' }}>
 
               <Card3Title>{activity.name}</Card3Title>
@@ -253,16 +271,21 @@ const toggleActivityClose = async (activity: IActivity) => {
                   <Card3Details>4 - 8 personer | 90 min.</Card3Details>
                 </>
               )}
-
-              <button
-                onClick={() => (activity.closed ? toggleActivityOpen(activity) : toggleActivityClose(activity))}
-                style={{ margin: '0.5em' }}
-              >
-                {activity.closed ? 'Open' : 'Close'}
-              </button>
+                {moment(selectedSlot).format('HH:mm') === '00:00' && (
+                  <button
+                    onClick={() => (activity.closed ? toggleActivityOpen(activity) : toggleActivityClose(activity))}
+                    style={{ margin: '0.5em' }}
+                  >
+                    {activity.closed ? 'Open' : 'Close'}
+                  </button>
+                )}
+                {moment(selectedSlot).format('HH:mm') !== '00:00' && (
+                  <button>Opret Reservation</button>)}
             </Card3>
           ))}
+            </div>
         </ul>
+      
       </div>
     </PageLayout>
   );

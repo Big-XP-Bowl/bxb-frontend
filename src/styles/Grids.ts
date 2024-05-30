@@ -10,21 +10,21 @@ const sm = css`
 `;
 
 const md = css`
-  @media (min-width: 768px) {
+  @media (min-width: 700px) {
     grid-template-columns: repeat(2, 1fr);
-    max-width: 992px;
-  }
-`;
-
-const lg = css`
-  @media (min-width: 992px) {
-    grid-template-columns: repeat(3, 1fr);
     max-width: 1200px;
   }
 `;
 
+const lg = css`
+  @media (min-width: 1000px) {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1400px;
+  }
+`;
+
 const xl = css`
-  @media (min-width: 1200px) {
+  @media (min-width: 1400px) {
     grid-template-columns: repeat(4, 1fr);
     max-width: 1400px;
   }
@@ -32,8 +32,11 @@ const xl = css`
 
 const Grid1 = styled.div`
   display: grid;
+  align-items: center;
+  justify-content: center;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
+  padding-bottom: 5rem;
   ${sm}
   ${md}
   ${lg}
@@ -42,8 +45,11 @@ const Grid1 = styled.div`
 
 const Grid2 = styled.div`
   display: grid;
+  align-items: center;
+  justify-content: center;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+  padding-bottom: 5rem;
   ${sm}
   ${md}
   ${lg}
