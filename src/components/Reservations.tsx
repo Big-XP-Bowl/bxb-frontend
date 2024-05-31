@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaPen, FaTrash } from "react-icons/fa";
+import { FaPen, FaTrash, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import useReservations from "../hooks/useReservations";
 import useBowlingLanes from "../hooks/useBowlingLanes";
 import useDiningTables from "../hooks/useDiningTables";
@@ -69,6 +69,16 @@ const Reservations = () => {
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("startTime");
+  const [sortedAscending, setSortedAscending] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(30);
+  const [isChildFriendly, setIsChildFriendly] = useState(false);
+  
+  useEffect(() => {
+    setCurrentPage(1); // Reset currentPage to 1 when searchQuery changes
+  }, [searchQuery]);
 
   useEffect(() => {
     if (username) {
@@ -199,13 +209,6 @@ const Reservations = () => {
       startTime: formattedDate,
     }));
   };
-    
-  //   const isoString = date.toISOString();
-  //   setFormData((prevState) => ({
-  //     ...prevState,
-  //     startTime: isoString,
-  //   }));
-  // };
 
   const renderActivityOptions = () => {
     if (selectedActivityType === "Airhockey") {
@@ -221,7 +224,11 @@ const Reservations = () => {
         </option>
       ));
     } else if (selectedActivityType === "BowlingLane") {
-      return bowlingLanes.map((activity) => (
+      const lanesToRender = isChildFriendly
+        ? bowlingLanes.filter((lane) => lane.childFriendly)
+        : bowlingLanes;
+
+      return lanesToRender.map((activity) => (
         <option key={activity.id} value={activity.id}>
           {activity.name}
         </option>
@@ -229,6 +236,61 @@ const Reservations = () => {
     }
     return null;
   };
+  
+
+  const filteredReservations = reservations.filter((reservation) =>
+    reservation.customerPhone.includes(searchQuery) ||
+    reservation.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+    
+  );
+
+  const sortedReservations = [...filteredReservations].sort((a, b) => {
+    if (sortBy === "startTime") {
+      return sortedAscending
+        ? new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        : new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+    }
+    return 0;
+  });
+
+
+  const toggleSortDirection = () => {
+    setSortedAscending((prev) => !prev);
+  };
+
+  const parseTime = (dateTime: Date): string => {
+    const timeZone = 'Europe/Copenhagen';
+  
+    // Format the date as dd/MM/yyyy
+    const formattedDate = formatInTimeZone(dateTime, timeZone, 'dd/MM/yyyy');
+  
+    // Format the time as hh:mm
+    const formattedTime = formatInTimeZone(dateTime, timeZone, 'HH:mm');
+  
+    // Concatenate the formatted date and time with "kl." in between
+    return `${formattedDate} kl. ${formattedTime}`;
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentReservations = sortedReservations.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  // Total number of pages
+  const totalPages = Math.ceil(sortedReservations.length / itemsPerPage);
+
+  // Next page handler
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  // Previous page handler
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+  
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -238,6 +300,12 @@ const Reservations = () => {
     <PageLayout>
       <GridTop>
         <h2>Reservationer</h2>
+        <input
+          type="text"
+          placeholder="Search by phone number or customer name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <button onClick={handleAddFormOpen}>Opret Reservation</button>
       </GridTop>
       <TableWrapper>
@@ -245,7 +313,17 @@ const Reservations = () => {
           <TableHeader>
             <tr>
               <th style={{ padding: "8px" }}>ID</th>
-              <th style={{ padding: "8px" }}>Start Tid</th>
+              <th style={{ padding: "8px" }} onClick={() => setSortBy("startTime")}>
+                Start Tid
+                {sortBy === "startTime" && (
+                  <span
+                    style={{ marginLeft: "5px", fontSize: "12px" }}
+                    onClick={toggleSortDirection}
+                  >
+                    {sortedAscending ? <FaArrowUp /> : <FaArrowDown />}
+                  </span>
+                )}
+              </th>
               <th style={{ padding: "8px" }}>Antal Deltagere</th>
               <th style={{ padding: "8px" }}>Kunde Navn</th>
               <th style={{ padding: "8px" }}>Telfon</th>
@@ -254,39 +332,50 @@ const Reservations = () => {
             </tr>
           </TableHeader>
           <tbody>
-            {isLoading && (
-              <tr>
-                <td>Loading...</td>
-              </tr>
-            )}
-            {reservations.map((reservation) => (
-              <TableRow key={reservation.id}>
-                <TableData>{reservation.id}</TableData>
-                <TableData>{reservation.startTime}</TableData>
-                <TableData>{reservation.partySize}</TableData>
-                <TableData>{reservation.customerName}</TableData>
-                <TableData>{reservation.customerPhone}</TableData>
-                <TableData>
-                  {/* Render activity name */}
-                  {reservation.activityId && (
-                    <>{<ActivityTypeRenderer reservation={reservation} />}</>
-                  )}
-                </TableData>
-                <TableData>
-                  <FaPen
-                    style={{ marginRight: "5px", cursor: "pointer" }}
-                    onClick={() => handleUpdateReservation(reservation)}
-                  />
-                  <FaTrash
-                    style={{ marginRight: "5px", cursor: "pointer" }}
-                    onClick={() => handleDeleteReservation(reservation)}
-                  />
-                </TableData>
-              </TableRow>
-            ))}
-          </tbody>
+  {isLoading && (
+    <tr>
+      <td>Loading...</td>
+    </tr>
+  )}
+  {filteredReservations.map &&
+    currentReservations.map((reservation) => (
+      <TableRow key={reservation.id}>
+        <TableData>{reservation.id}</TableData>
+        <TableData>
+          {parseTime(new Date(reservation.startTime))}
+        </TableData>
+        <TableData>{reservation.partySize}</TableData>
+        <TableData>{reservation.customerName}</TableData>
+        <TableData>{reservation.customerPhone}</TableData>
+        <TableData>
+          {reservation.activityId && (
+            <>{<ActivityTypeRenderer reservation={reservation} />}</>
+          )}
+        </TableData>
+        <TableData>
+          <FaPen
+            style={{ marginRight: "5px", cursor: "pointer" }}
+            onClick={() => handleUpdateReservation(reservation)}
+          />
+          <FaTrash
+            style={{ marginRight: "5px", cursor: "pointer" }}
+            onClick={() => handleDeleteReservation(reservation)}
+          />
+        </TableData>
+      </TableRow>
+    ))}
+</tbody>
         </TableLarge>
       </TableWrapper>
+      <div>
+      <button onClick={handlePrevPage} disabled={currentPage === 1}>
+        Previous
+      </button>
+      <span>Page {currentPage} of {totalPages}</span>
+      <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        Next
+      </button>
+    </div>
       {showAddForm && (
         <Modal>
           <FormContainer onSubmit={formData.id ? handleFormUpdate : handleAddReservation} >
@@ -319,6 +408,16 @@ const Reservations = () => {
                     <option value="BowlingLane">Bowling</option>
                   </select>
                 </Label>
+                {selectedActivityType === "BowlingLane" && (
+                <Label>
+                  Børnevenlig:
+                  <Input
+                    type="checkbox"
+                    checked={isChildFriendly}
+                    onChange={(e) => setIsChildFriendly(e.target.checked)}
+                  />
+                </Label>
+              )}
                 {selectedActivityType && (
                   <Label>
                     Specifikation:

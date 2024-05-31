@@ -1,6 +1,7 @@
+// src/styles/Nav.ts
 import styled from "styled-components";
 
-const Nav = styled.div`
+const Nav = styled.div<{ menuOpen: boolean }>`
   background-color: #1999;
   overflow: hidden;
   position: fixed;
@@ -9,11 +10,18 @@ const Nav = styled.div`
   width: 100%;
   z-index: 1000;
   margin: 0;
+  height: ${({ menuOpen }) => (menuOpen ? "100vh" : "60px")};
+  transition: height 0.3s ease;
 
   nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
+  }
+
+  .menu-icon {
+    display: none;
   }
 
   ul {
@@ -44,9 +52,25 @@ const Nav = styled.div`
   }
 
   @media (max-width: 768px) {
+    .menu-icon {
+      display: block;
+      cursor: pointer;
+    }
+
     ul {
       flex-direction: column;
       align-items: center;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 60px);
+      background-color: #1999;
+      display: none;
+    }
+
+    ul.nav-menu.active {
+      display: flex;
     }
 
     li {
@@ -55,11 +79,6 @@ const Nav = styled.div`
   }
 
   @media (max-width: 480px) {
-    ul {
-      flex-direction: column;
-      align-items: center;
-    }
-
     li {
       padding: 0.25rem;
     }

@@ -15,8 +15,9 @@ import Schedule from "./components/Schedule";
 import TestReservations from "./components/testReservations";
 import Login from "./security/Login";
 import { Route, Routes } from "react-router-dom";
+import LogoutComponent from "./security/Logout";
 
-// make routes here!
+// routes here!
 
 function App() {
   return (
@@ -31,7 +32,6 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/About" element={<About />} />
 
-
           {/* ruter til admin visning */}
           <Route path="/activities" element={<Activities />} />
           <Route path="/reservations" element={<Reservations />} />
@@ -40,7 +40,8 @@ function App() {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/products" element={<Products />} />
-
+          <Route path="/about" element={<About />} />
+          <Route path="/logout" element={<LogoutComponent />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </Layout>

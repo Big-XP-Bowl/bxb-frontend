@@ -4,13 +4,12 @@ const PageLayout = styled.div`
   height: 100vh;
   justify-content: center;
   align-items: center;
-  padding: 5rem;
+  padding: 5em;
+  padding-bottom: 60em;
 `;
 
 const ContentGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  max-width: 80%;
+  display: flex;
   justify-content: space-around;
   align-items: center;
     
