@@ -28,15 +28,27 @@ jobs:
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
         run: |
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
           # Ensure we have the latest version of the deploy branch
           git fetch origin gh-pages:gh-pages
+          
           # Switch to the deploy branch
-          git checkout gh-pages
+          git checkout gh-pages || git checkout --orphan gh-pages
+          
+          # Remove existing files
+          git rm -rf .
+          
           # Copy build files to the root
-          cp -r build/* .
+          cp -r dist/* .
+          
           # Add all changes
           git add .
+          
           # Commit the changes
           git commit -m "Deploy to GitHub Pages"
+          
           # Push to the deploy branch
           git push origin gh-pages
