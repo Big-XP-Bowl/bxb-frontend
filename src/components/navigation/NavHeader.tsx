@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-scroll";
 import { useAuth } from "../../security/AuthProvider";
 import { FaBowlingBall, FaBars, FaTimes } from "react-icons/fa";

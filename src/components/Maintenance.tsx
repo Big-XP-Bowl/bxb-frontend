@@ -3,7 +3,7 @@ import useShoes from '../hooks/useShoes';
 import usePins from '../hooks/usePins';
 
 const Maintenance: React.FC = () => {
-  const { shoes, createShoe, deleteShoeBySize } = useShoes();
+  const { createShoe, deleteShoeBySize } = useShoes();
   const { pins, createPin, deletePin } = usePins();
   const [pinCount, setPinCount] = useState<number>(0);
   const [shoeSize, setShoeSize] = useState<number>(0);
