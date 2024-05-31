@@ -25,6 +25,18 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
-        run: npm run deploy
+        run: |
+          # Ensure we have the latest version of the deploy branch
+          git fetch origin gh-pages:gh-pages
+          # Switch to the deploy branch
+          git checkout gh-pages
+          # Copy build files to the root
+          cp -r build/* .
+          # Add all changes
+          git add .
+          # Commit the changes
+          git commit -m "Deploy to GitHub Pages"
+          # Push to the deploy branch
+          git push origin gh-pages
