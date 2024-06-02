@@ -11,7 +11,7 @@ import ReservationSearch from './ReservationSeach.tsx';
 import ReservationPaginator from './ReservationPaginator.tsx';
 import ReservationForm from './ReservationForm.tsx';
 import { Modal } from '../../styles/FormLayout.ts'; 
-import { parseTime } from './reservationUtils.ts'
+import { parseTime, validateReservationForm } from './reservationUtils.ts'
 import ActivityNameRenderer from './ActivityTypeRenderer.tsx';
 import { Toaster, toast } from 'react-hot-toast';
 import DeleteConfirmation from './ReservationDeleteConfirmation.tsx';
@@ -73,6 +73,13 @@ const handleDeleteReservation = (reservation: IReservation) => {
 };
 
 const handleFormSubmit = async (formData: Partial<IReservation>) => {
+  const errors = validateReservationForm(formData);
+
+  if (errors.length > 0) {
+    toast.error(errors.join("\n"));
+    return;
+  }
+
   try {
     const dataToSubmit = {
       activityId: formData.activityId,
@@ -82,7 +89,7 @@ const handleFormSubmit = async (formData: Partial<IReservation>) => {
       partySize: formData.partySize,
       customerPhone: formData.customerPhone,
     };
-    
+
     if (formData.id) {
       await updateReservation(formData.id, dataToSubmit as IReservation);
       toast.success('Reservationen er opdateret');
@@ -91,6 +98,7 @@ const handleFormSubmit = async (formData: Partial<IReservation>) => {
       toast.success('Reservationen er oprettet');
     }
 
+    // Reset form only on successful submission
     setShowForm(false);
     setFormData({});
   } catch (error) {
@@ -98,6 +106,7 @@ const handleFormSubmit = async (formData: Partial<IReservation>) => {
     toast.error('Der opstod en fejl');
   }
 };
+
 
 const filteredReservations = reservations.filter((reservation) =>
   reservation.customerPhone.includes(searchQuery) ||

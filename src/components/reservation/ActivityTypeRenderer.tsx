@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useActivities from '../../hooks/useActivities.ts';
 import { IReservation, IActivity } from '../../types/types.ts';
 
@@ -6,7 +6,7 @@ interface ActivityTypeRendererProps {
   reservation: IReservation;
 }
 
-export const ActivityNameRenderer: React.FC<ActivityTypeRendererProps> = ({ reservation }) => {
+export const ActivityNameRenderer = ({ reservation }: ActivityTypeRendererProps) => {
   const { fetchActivityById } = useActivities();
   const [activityName, setActivityName] = useState<string>('');
 
