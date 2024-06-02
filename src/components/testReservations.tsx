@@ -246,7 +246,13 @@ const toggleActivityClose = async (activity: IActivity) => {
         formats={{ timeGutterFormat: (date: Date) => moment(date).format('HH:mm') }}
       />
       <div ref={availableActivitiesRef}>
-      <h2>Tilgængelige aktiviteter {selectedSlot ? moment(selectedSlot).format('dddd') : ''} d. {selectedSlot ? moment(selectedSlot).format('DD/MM/YYYY') : ''} kl. {selectedSlot ? moment(selectedSlot).format('HH:mm') : ''}</h2>
+      {moment(selectedSlot).format('HH:mm') === '00:00' && (
+        <h2>Luk/Åben Aktiviteter {selectedSlot ? moment(selectedSlot).format('dddd') : ''} d. {selectedSlot ? moment(selectedSlot).format('DD/MM/YYYY') : ''}</h2>
+      )}
+      {moment(selectedSlot).format('HH:mm') !== '00:00' && (
+        <h2>Tilgængelige aktiviteter {selectedSlot ? moment(selectedSlot).format('dddd') : ''} d. {selectedSlot ? moment(selectedSlot).format('DD/MM/YYYY') : ''} kl. {selectedSlot ? moment(selectedSlot).format('HH:mm') : ''}</h2>
+      )}
+      
 
         <ul>
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', paddingBottom: '5em'}}>

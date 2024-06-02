@@ -1,5 +1,7 @@
 import {useState, useEffect} from 'react';
 import useReservations from '../../hooks/useReservations';
+import useActivities from '../../hooks/useActivities.ts';
+import { IReservation } from '../../types/types';
 import { FaPen, FaTrash, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { useAuth } from '../../security/AuthProvider';
 import { GridTop } from '../../styles/Grids';
@@ -10,9 +12,14 @@ import ReservationPaginator from './ReservationPaginator.tsx';
 import ReservationForm from './ReservationForm.tsx';
 import { Modal } from '../../styles/FormLayout.ts'; 
 import { parseTime } from './reservationUtils.ts'
+import ActivityNameRenderer from './ActivityTypeRenderer.tsx';
+import { Toaster, toast } from 'react-hot-toast';
+import DeleteConfirmation from './ReservationDeleteConfirmation.tsx';
 
 const FullReservation = () => {
-  const { reservations, isLoading } = useReservations();
+  
+  const { reservations, isLoading, createReservation, updateReservation, deleteReservation } = useReservations();
+  const { fetchActivityById } = useActivities();
   const { username } = useAuth();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("startTime");
@@ -20,16 +27,77 @@ const FullReservation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(30);
   const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState<Partial<IReservation>>({});
+  const [selectedActivityType, setSelectedActivityType] = useState<string>("");
 
-useEffect(() => {
-if (username) {
-  console.log(`User ${username} is logged in`);
-  }
-}, [username]);
+  useEffect(() => {
+    if (username) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        userWithRolesUsername: username,
+      }));
+    }
+  }, [username]);
+
 
 useEffect(() => {
   setCurrentPage(1);
 }, [searchQuery]);
+
+
+const handleOpenForm = () => {
+  setFormData({});
+  setShowForm(true);
+};
+
+const handleUpdateReservation = async (reservation: IReservation) => {
+  setFormData(reservation);
+  try {
+    const activity = await fetchActivityById(reservation.activityId);
+    if (activity) {
+      setSelectedActivityType(selectedActivityType);
+      console.log("Activity fetched", activity);
+    }
+  } catch (error) {
+    console.error("An error occurred while fetching activity details", error);
+  }
+  setShowForm(true);
+};
+
+const handleDeleteReservation = (reservation: IReservation) => {
+  setFormData(reservation); // Not strictly necessary for deletion
+ 
+    setShowModal(true);
+  
+};
+
+const handleFormSubmit = async (formData: Partial<IReservation>) => {
+  try {
+    const dataToSubmit = {
+      activityId: formData.activityId,
+      customerName: formData.customerName,
+      userWithRolesUsername: username,
+      startTime: formData.startTime,
+      partySize: formData.partySize,
+      customerPhone: formData.customerPhone,
+    };
+    
+    if (formData.id) {
+      await updateReservation(formData.id, dataToSubmit as IReservation);
+      toast.success('Reservationen er opdateret');
+    } else {
+      await createReservation(dataToSubmit as IReservation);
+      toast.success('Reservationen er oprettet');
+    }
+
+    setShowForm(false);
+    setFormData({});
+  } catch (error) {
+    console.error("An error occurred while submitting the form", error);
+    toast.error('Der opstod en fejl');
+  }
+};
 
 const filteredReservations = reservations.filter((reservation) =>
   reservation.customerPhone.includes(searchQuery) ||
@@ -56,10 +124,6 @@ const currentReservations = sortedReservations.slice(
   indexOfLastItem
 );
 
-const handleOpenForm = () => {
-  setShowForm(true);
-};
-
 const totalPages = Math.ceil(sortedReservations.length / itemsPerPage);
 
 const handleNextPage = () => {
@@ -80,10 +144,10 @@ if (isLoading) {
 
 return (
   <PageLayout>
+    <Toaster />
     <GridTop>
       <h2>Reservationer</h2>
       <ReservationSearch onSearch={handleSearch} reservations={reservations} />
-      {/* button opens reservation form in a modal here */}
       <button onClick={handleOpenForm}>Opret Reservation</button>
     </GridTop>
     <TableWrapper>
@@ -125,17 +189,22 @@ return (
         <TableData>{reservation.partySize}</TableData>
         <TableData>{reservation.customerName}</TableData>
         <TableData>{reservation.customerPhone}</TableData>
-        <TableData>Aktivitets Type</TableData>
+        <TableData>
+          {reservation.activityId && (
+            <>{<ActivityNameRenderer reservation={reservation} />}</>
+          )}
+        </TableData>
         <TableData>
           <FaPen
             style={{ marginRight: "5px", cursor: "pointer" }}
-            onClick={() => console.log("Open Reservation updateForm")}
+            onClick={() => handleUpdateReservation(reservation)}
           />
           <FaTrash
             style={{ marginRight: "5px", cursor: "pointer" }}
-            onClick={() => console.log("Open Delete Confirmation Form")}
+            onClick={() => handleDeleteReservation(reservation)}
           />
         </TableData>
+
     </TableRow>
   ))}
 </tbody>
@@ -148,15 +217,23 @@ return (
       handlePrevPage={handlePrevPage}
     />
     {showForm && (
-    <Modal>
-      <ReservationForm
-        initialFormData={{}} 
-        onSubmit={(formData) => console.log("Form submitted", formData)} 
-        showForm={showForm} 
-        onClose={() => setShowForm(false)}
-      />
-    </Modal>
-  )}
+            <Modal>
+              <ReservationForm
+                initialFormData={formData}
+                onSubmit={handleFormSubmit}
+                showForm={showForm}
+                onClose={() => setShowForm(false)}
+              />
+            </Modal>
+          )}
+          {showModal && (
+            <DeleteConfirmation
+              showModal={showModal}
+              setShowModal={setShowModal}
+              reservation={formData as IReservation}
+              deleteReservation={deleteReservation}
+            />
+          )}
   </PageLayout>
 )};
 

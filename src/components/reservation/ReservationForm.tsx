@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useBowlingLanes from "../../hooks/useBowlingLanes";
+import useDiningTables from "../../hooks/useDiningTables";
+import useAirhockeyTables from "../../hooks/useAirhockeyTables";
+import useActivities from '../../hooks/useActivities.ts';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import toast from 'react-hot-toast'; // Import toast for displaying notifications
 import { IReservation } from "../../types/types";
 import { formatInTimeZone } from 'date-fns-tz';
 import {
@@ -11,7 +14,7 @@ import {
   Label,
   Input,
   ButtonContainer,
-} from "../../styles/FormLayout.ts";// Import formatInTimeZone for formatting date in timezone
+} from "../../styles/FormLayout.ts";
 
 interface ReservationFormProps {
   initialFormData: Partial<IReservation>;
@@ -20,10 +23,55 @@ interface ReservationFormProps {
   onClose: () => void;
 }
 
-const ReservationForm = ({ initialFormData, onSubmit, showForm, onClose  }: ReservationFormProps) => {
+const ReservationForm = ({ initialFormData, onSubmit, showForm, onClose }: ReservationFormProps) => {
   const [formData, setFormData] = useState<Partial<IReservation>>(initialFormData);
   const [selectedActivityType, setSelectedActivityType] = useState<string>("");
-  const [isChildFriendly, setIsChildFriendly] = useState<boolean>(false); // Add this state
+  const [isChildFriendly, setIsChildFriendly] = useState<boolean>(false);
+  const { fetchActivityById } = useActivities();
+  const { bowlingLanes, getBowlingLanes } = useBowlingLanes();
+  const { diningTables, getDiningTables } = useDiningTables();
+  const { airhockeyTables, getAirhockeyTables } = useAirhockeyTables();
+  const [activitiesFetched, setActivitiesFetched] = useState({
+    Airhockey: false,
+    DiningTable: false,
+    BowlingLane: false,
+  });
+
+  useEffect(() => {
+    const fetchActivityDetails = async () => {
+      if (formData.activityId) {
+        try {
+          const activity = await fetchActivityById(formData.activityId);
+          setSelectedActivityType(activity.type);
+        } catch (error) {
+          console.error("An error occurred while fetching activity details", error);
+        }
+      }
+    };
+  
+    fetchActivityDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
+
+  useEffect(() => {
+    if (selectedActivityType === "Airhockey" && !activitiesFetched.Airhockey) {
+      getAirhockeyTables();
+      setActivitiesFetched((prev) => ({ ...prev, Airhockey: true }));
+    } else if (
+      selectedActivityType === "DiningTable" &&
+      !activitiesFetched.DiningTable
+    ) {
+      getDiningTables();
+      setActivitiesFetched((prev) => ({ ...prev, DiningTable: true }));
+    } else if (
+      selectedActivityType === "BowlingLane" &&
+      !activitiesFetched.BowlingLane
+    ) {
+      getBowlingLanes();
+      setActivitiesFetched((prev) => ({ ...prev, BowlingLane: true }));
+    }
+  }, [selectedActivityType, activitiesFetched, getAirhockeyTables, getDiningTables, getBowlingLanes]);
+
   
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -34,7 +82,7 @@ const ReservationForm = ({ initialFormData, onSubmit, showForm, onClose  }: Rese
     }
     setFormData((prevState) => ({
       ...prevState,
-      [name]: name === "activityId" ? parseInt(value) : value, // Convert value to number for activityID
+      [name]: name === "activityId" ? parseInt(value) : value,
     }));
   };
 
@@ -51,7 +99,33 @@ const ReservationForm = ({ initialFormData, onSubmit, showForm, onClose  }: Rese
     e.preventDefault();
     onSubmit(formData as IReservation);
     setFormData(initialFormData); 
-    toast.success("Reservation submitted successfully");
+  };
+
+  const renderActivityOptions = () => {
+    if (selectedActivityType === "Airhockey") {
+      return airhockeyTables.map((activity) => (
+        <option key={activity.id} value={activity.id}>
+          {activity.name}
+        </option>
+      ));
+    } else if (selectedActivityType === "DiningTable") {
+      return diningTables.map((activity) => (
+        <option key={activity.id} value={activity.id}>
+          {activity.name}
+        </option>
+      ));
+    } else if (selectedActivityType === "BowlingLane") {
+      const lanesToRender = isChildFriendly
+        ? bowlingLanes.filter((lane) => lane.childFriendly)
+        : bowlingLanes;
+
+      return lanesToRender.map((activity) => (
+        <option key={activity.id} value={activity.id}>
+          {activity.name}
+        </option>
+      ));
+    }
+    return null;
   };
 
   return (
@@ -60,17 +134,20 @@ const ReservationForm = ({ initialFormData, onSubmit, showForm, onClose  }: Rese
         <FormContainer onSubmit={handleFormSubmit}>
           <h2>{formData.id ? "Edit Reservation" : "Add Reservation"}</h2>
           <InputContainer>
-            <Label>
-              Start Tid og Dato:
-              <DatePicker
-                selected={formData.startTime ? new Date(formData.startTime) : null}
-                //@ts-expect-error // Ignore type error
-                onChange={(date: Date | null) => handleDateChange(date)}
-                showTimeSelect
-                dateFormat="dd/MM/yyyy HH:mm"
-                name="startTime"
-              />
-            </Label>
+          <Label>
+            Start Tid og Dato:
+            <DatePicker
+              selected={formData.startTime ? new Date(formData.startTime) : null}
+              onChange={(date: Date | null) => {
+                if (date) {
+                  handleDateChange(date);
+                }
+              }}
+              showTimeSelect
+              dateFormat="dd/MM/yyyy HH:mm"
+              name="startTime"
+            />
+          </Label>
             <Label>
               Aktivitets Type:
               <select
@@ -84,6 +161,29 @@ const ReservationForm = ({ initialFormData, onSubmit, showForm, onClose  }: Rese
                 <option value="BowlingLane">Bowling</option>
               </select>
             </Label>
+            {selectedActivityType === "BowlingLane" && (
+              <Label>
+                Børnevenlig:
+                <Input
+                  type="checkbox"
+                  checked={isChildFriendly}
+                  onChange={(e) => setIsChildFriendly(e.target.checked)}
+                />
+              </Label>
+            )}
+            {selectedActivityType && (
+              <Label>
+                Specifikation:
+                <select
+                  value={formData.activityId || ""}
+                  name="activityId"
+                  onChange={handleFormChange}
+                >
+                  <option value="">Vælg {selectedActivityType}</option>
+                  {renderActivityOptions()}
+                </select>
+              </Label>
+            )}
             <Label>
               Antal Deltagere:
               <Input
@@ -111,25 +211,18 @@ const ReservationForm = ({ initialFormData, onSubmit, showForm, onClose  }: Rese
                 onChange={handleFormChange}
               />
             </Label>
-            <Label>
-              Børnevenlig:
-              <Input
-                type="checkbox"
-                checked={selectedActivityType === "BowlingLane" ? isChildFriendly : false}
-                onChange={(e) => setIsChildFriendly(e.target.checked)}
-              />
-            </Label>
           </InputContainer>
           <ButtonContainer>
             <button type="submit">
               {formData.id ? "Update" : "Submit"}
             </button>
-            <button onClick={onClose}>Cancel</button>
+            <button type="button" onClick={onClose}>Cancel</button>
           </ButtonContainer>
         </FormContainer>
       </Modal>
     )
   );
 };
+
 
 export default ReservationForm;
