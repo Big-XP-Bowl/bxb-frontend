@@ -42,6 +42,7 @@ function App() {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/about" element={<About />} />
           <Route path="/logout" element={<LogoutComponent />} />
           <Route path="/login" element={<Login />} />
         </Routes>
