@@ -5,28 +5,51 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import useReservations from '../hooks/useReservations';
 import useActivities from '../hooks/useActivities';
-import { IActivity, IBowlingLane } from '../types/types';
-import { Toaster } from 'react-hot-toast';
+import { IActivity, IBowlingLane, IReservation } from '../types/types';
+import { Toaster, toast } from 'react-hot-toast';
 import { PageLayout } from '../styles/PageLayout';
 import styled from 'styled-components';
 import { GridCalendarToolbar } from '../styles/Grids';
-import { toast } from 'react-hot-toast';
+import ReservationForm from './reservation/ReservationForm';
+import { useAuth } from '../security/AuthProvider';
+
+
 
 const localizer = momentLocalizer(moment);
 
 const TestReservations: React.FC = () => {
-  const { reservations, isLoading } = useReservations();
+  const { reservations, isLoading, createReservation, fetchReservations } = useReservations();
   const { activities, updateActivity, fetchActivities } = useActivities();
   const [date, setDate] = useState<Date>(new Date());
   const [selectedActivityType, setSelectedActivityType] = useState<string>('');
   const [availableActivities, setAvailableActivities] = useState<IActivity[]>([]);
-  const [selectedSlot, setSelectedSlot] = useState<Date | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<Date | null>(null); 
+  const { username } = useAuth();
   const availableActivitiesRef = useRef<HTMLDivElement>(null);
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const initialFormData: Partial<IReservation> = {
+    activityId: 0,
+    startTime: "",
+    partySize: 0,
+    userWithRolesUsername: username || "",
+    customerName: "",
+    customerPhone: "",
+  };
+  const [formData, setFormData] = useState<Partial<IReservation>>(initialFormData);
 
   interface SlotInfo {
     start: Date;
     end: Date;
   }
+
+  useEffect(() => {
+    if (username) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        userWithRolesUsername: username,
+      }));
+    }
+  }, [username]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -163,6 +186,26 @@ const toggleActivityClose = async (activity: IActivity) => {
     };
   };
 
+  const handleCreateReservationClick = (slot: Date, activity: IActivity) => {
+    setFormData({
+      ...initialFormData,
+      activityId: activity.id,
+      startTime: slot.toISOString(),
+    });
+    setShowForm(true);
+  };
+  
+  const handleFormSubmit = async (data: IReservation) => {
+    try {
+      await createReservation(data);
+      setShowForm(false);
+      fetchReservations();
+      toast.success('Reservation oprettet');
+    } catch (error) {
+      toast.error('Error creating reservation');
+    }
+  };
+
   interface ToolbarNavigation {
     (action: string, date?: Date): void;
   }
@@ -290,11 +333,21 @@ const toggleActivityClose = async (activity: IActivity) => {
                   </button>
                 )}
                 {moment(selectedSlot).format('HH:mm') !== '00:00' && (
-                  <button>Opret Reservation</button>)}
-
+                  <button onClick={() => handleCreateReservationClick(selectedSlot!, activity)}>Opret Reservation</button>
+                )}
                 {isBowlingLane(activity) && activity.childFriendly && <FaChild />} 
             </Card3>
+            
           ))}
+          {showForm && (
+            <ReservationForm
+            initialFormData={formData}
+            onSubmit={handleFormSubmit}
+            showForm={showForm}
+            onClose={() => setShowForm(false)}
+          />
+      )}
+          
             </div>
         </ul>
       

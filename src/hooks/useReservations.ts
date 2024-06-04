@@ -91,7 +91,7 @@ function useReservations() {
     }
   };
 
-  return { reservations, isLoading, fetchReservationsByID, createReservation, updateReservation, deleteReservation};
+  return { reservations, isLoading, fetchReservationsByID, createReservation, updateReservation, deleteReservation, fetchReservations};
 }
 export default useReservations;
 
