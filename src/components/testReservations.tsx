@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaChild } from "react-icons/fa";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -12,8 +13,6 @@ import styled from 'styled-components';
 import { GridCalendarToolbar } from '../styles/Grids';
 import ReservationForm from './reservation/ReservationForm';
 import { useAuth } from '../security/AuthProvider';
-
-
 
 const localizer = momentLocalizer(moment);
 
@@ -211,10 +210,13 @@ const toggleActivityClose = async (activity: IActivity) => {
   }
 
   const CustomToolbar = ({ label, onNavigate }: { label: string; onNavigate: ToolbarNavigation }) => {
+    const navigate = useNavigate();
     return (
       <>
-      <div >
-        <span style={{margin: '0.5em', fontSize: '22px', fontWeight: 'bold'}}>{label}</span>
+      <div style={{ gap: '1rem'}}>
+        <span style={{margin: '0.5em', fontSize: '18px', fontWeight: 'bold'}}>Reservations Kalender</span>
+        <span style={{margin: '0.5em', fontSize: '18px', fontWeight: 'bold'}}>{label}</span>
+        <button onClick={() => navigate('/reservations')} style={{ margin: '0.5em' }}>Tabel Oversigt</button>
         </div>
         <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr"}}>
         <button onClick={() => onNavigate('TODAY')} style={{margin: '0.5em'}}>Today</button>
@@ -238,7 +240,6 @@ const toggleActivityClose = async (activity: IActivity) => {
   return (
     <PageLayout>
       <Toaster />
-      <h1>Reservation Calendar</h1>
       <Calendar
         localizer={localizer}
         selectable

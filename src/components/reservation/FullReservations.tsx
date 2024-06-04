@@ -15,9 +15,10 @@ import { parseTime, validateReservationForm } from './reservationUtils.ts'
 import ActivityNameRenderer from './ActivityTypeRenderer.tsx';
 import { Toaster, toast } from 'react-hot-toast';
 import DeleteConfirmation from './ReservationDeleteConfirmation.tsx';
+import { useNavigate } from 'react-router-dom';
 
 const FullReservation = () => {
-  
+  const navigate = useNavigate();
   const { reservations, isLoading, createReservation, updateReservation, deleteReservation } = useReservations();
   const { fetchActivityById } = useActivities();
   const { username } = useAuth();
@@ -67,9 +68,7 @@ const handleUpdateReservation = async (reservation: IReservation) => {
 
 const handleDeleteReservation = (reservation: IReservation) => {
   setFormData(reservation); // Not strictly necessary for deletion
- 
     setShowModal(true);
-  
 };
 
 const handleFormSubmit = async (formData: Partial<IReservation>) => {
@@ -156,6 +155,8 @@ return (
     <Toaster />
     <GridTop>
       <h2>Reservationer</h2>
+      <button onClick={() => navigate('/reservations-calendar')} style={{ margin: '0.5em' }}>Kalender Oversigt</button>
+
       <ReservationSearch onSearch={handleSearch} reservations={reservations} />
       <button onClick={handleOpenForm}>Opret Reservation</button>
     </GridTop>

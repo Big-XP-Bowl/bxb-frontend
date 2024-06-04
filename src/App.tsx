@@ -10,7 +10,6 @@ import Home from "./components/Home";
 import Maintenance from "./components/Maintenance";
 import Layout from "./components/navigation/Layout";
 import Products from "./components/Products";
-import Reservations from "./components/Reservations";
 import Schedule from "./components/Schedule";
 import TestReservations from "./components/testReservations";
 import Login from "./security/Login";
@@ -35,8 +34,8 @@ function App() {
 
           {/* ruter til admin visning */}
           <Route path="/activities" element={<Activities />} />
-          <Route path="/reservations" element={<Reservations />} />
-          <Route path="/test-reservations" element={<TestReservations />} />
+          <Route path="/reservations" element={<FullReservation />} />
+          <Route path="/reservations-calendar" element={<TestReservations />} />
           <Route path="/fullreservation" element={<FullReservation />} />
           <Route path="/employees" element={<Employees />} />
           <Route path="/schedule" element={<Schedule />} />
