@@ -12,6 +12,7 @@ import { PageLayout } from '../styles/PageLayout';
 import styled from 'styled-components';
 import { GridCalendarToolbar } from '../styles/Grids';
 import ReservationForm from './reservation/ReservationForm';
+// import { parseTime, validateReservationForm} from './reservation/reservationUtils';
 import { useAuth } from '../security/AuthProvider';
 
 const localizer = momentLocalizer(moment);
@@ -330,7 +331,7 @@ const toggleActivityClose = async (activity: IActivity) => {
                     onClick={() => (activity.closed ? toggleActivityOpen(activity) : toggleActivityClose(activity))}
                     style={{ margin: '0.5em' }}
                   >
-                    {activity.closed ? 'Open' : 'Close'}
+                    {activity.closed ? 'Åben Aktivitet' : 'Luk Aktivitet'}
                   </button>
                 )}
                 {moment(selectedSlot).format('HH:mm') !== '00:00' && (

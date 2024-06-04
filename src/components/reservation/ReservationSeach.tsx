@@ -18,7 +18,7 @@ const ReservationSearch = (props: ReservationSearchProps) => {
   return (
     <input
       type="text"
-      placeholder="Search by phone number or customer name"
+      placeholder="Søg på telefonnummer eller navn"
       value={searchQuery}
       onChange={handleSearchChange}
     />

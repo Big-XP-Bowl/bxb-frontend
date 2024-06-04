@@ -45,8 +45,8 @@ const Home = () => {
         <WaveWrapperTop>
           <WaveTop />
         </WaveWrapperTop>
-        <HeroCard id="about">
-          <About />
+        <HeroCard id="activities"  style={{ color: 'black'}}>
+          <Activities />
         </HeroCard>
         <WaveWrapperBottom>
           <WaveBottom />
@@ -56,13 +56,14 @@ const Home = () => {
         <WaveWrapperTop>
           <WaveTop />
         </WaveWrapperTop>
-        <HeroCard id="activities">
-          <Activities />
+        <HeroCard id="about">
+          <About />
         </HeroCard>
         <WaveWrapperBottom>
           <WaveBottom />
         </WaveWrapperBottom>
       </WavesSection>
+      
     </>
   );
 };

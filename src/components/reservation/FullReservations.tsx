@@ -178,7 +178,7 @@ return (
             </th>
             <th style={{ padding: "8px" }}>Antal Deltagere</th>
             <th style={{ padding: "8px" }}>Kunde Navn</th>
-            <th style={{ padding: "8px" }}>Telfon</th>
+            <th style={{ padding: "8px" }}>Telefon</th>
             <th style={{ padding: "8px" }}>Aktivitet</th>
             <th style={{ padding: "8px" }}>Handling</th>
           </tr>

@@ -36,12 +36,12 @@ const Maintenance: React.FC = () => {
   const reportMissingShoes = () => {
     console.log(`Reporting shoes of size ${shoeSize} missing`);
     deleteShoeBySize(shoeSize); // Slet sko af den angivne størrelse
-    toast.success(`Sko af størrelse ${shoeSize} er slettet fra systemet`);
+    toast.success(`Et par sko i størrelse ${shoeSize} er slettet fra systemet`);
   };
 
   const orderNewShoes = () => {
     createShoe({ size: shoeSize });
-    toast.success(`Ny sko af størrelse ${shoeSize} er bestilt til systemet`);
+    toast.success(`Nyt par sko i størrelse ${shoeSize} er bestilt til systemet`);
   };
 
   return (
@@ -72,9 +72,9 @@ const Maintenance: React.FC = () => {
           </div>
         </div>
         <div>
-          <h2>Shoes</h2>
+          <h2>Bowling sko</h2>
           <div>
-            <h3>Rapporter manglende sko</h3>
+            <h3>Rapporter manglende par sko i størrelse</h3>
             <input
               type="number"
               value={shoeSize}
@@ -83,7 +83,7 @@ const Maintenance: React.FC = () => {
             <button onClick={reportMissingShoes}>OK</button>
           </div>
           <div>
-            <h3>Bestil nye sko</h3>
+            <h3>Bestil nyt par sko i størrelse</h3>
             <input
               type="number"
               value={shoeSize}

@@ -88,7 +88,7 @@ const Products: React.FC = () => {
           transform: 'translateX(-50%)',
           backgroundColor: '#f9abab',
         }}>
-          Create New Product
+          Opret nyt produkt
         </button>
       )}
 
@@ -112,10 +112,10 @@ const Products: React.FC = () => {
               {/* Knapper til at håndtere produkter, kun synlig for manager og bar-medlemmer */}
               {isLoggedInAs(["ADMIN", "BAR"]) && (
                 <>
-                  <button onClick={() => handleAddToCart(product.id)}>Add to cart</button>
-                  <button onClick={() => handleRemoveFromCart(product.id)}>Remove from cart</button>
-                  <button onClick={() => { setEditProduct(product); handleOpenModal(); }}>Edit</button>
-                  <button onClick={() => handleDeleteProduct(product.id)}>Delete</button>
+                  <button onClick={() => handleAddToCart(product.id)}>Tilføj til kurv</button>
+                  <button onClick={() => handleRemoveFromCart(product.id)}>Fjern fra kurv</button>
+                  <button onClick={() => { setEditProduct(product); handleOpenModal(); }}>Rediger produkt</button>
+                  <button onClick={() => handleDeleteProduct(product.id)}>Slet produkt</button>
                 </>
               )}
             </Card2>
@@ -130,7 +130,7 @@ const Products: React.FC = () => {
             right: '20px',
             padding: '20px',
           }}>
-            <h2>Cart</h2>
+            <h2>Kurv</h2>
             <div>
               {/* Visning af kurvindhold */}
               {Object.entries(cart).map(([productId, quantity]) => {

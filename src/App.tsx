@@ -16,6 +16,7 @@ import Login from "./security/Login";
 import { Route, Routes } from "react-router-dom";
 import LogoutComponent from "./security/Logout";
 import FullReservation from "./components/reservation/FullReservations";
+import AdminPage from "./components/Admin";
 
 // routes here!
 
@@ -44,6 +45,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/logout" element={<LogoutComponent />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </Layout>
     </>
