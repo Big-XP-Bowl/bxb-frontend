@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useShoes from '../hooks/useShoes';
 import usePins from '../hooks/usePins';
+import { Toaster, toast } from 'react-hot-toast';
 
 const Maintenance: React.FC = () => {
   const { createShoe, deleteShoeBySize } = useShoes();
@@ -20,25 +21,32 @@ const Maintenance: React.FC = () => {
     console.log(`Reporting ${pinCount} missing pins`);
     for (let i = 0; i < pinCount; i++) {
       await deletePin(i); // Assuming deletePin deletes the first pin found or needs an ID
+     
     }
+    toast.success(`${pinCount} Pins er slettet fra systemet`);
   };
 
   const orderNewPins = async () => {
     for (let i = 0; i < pinCount; i++) {
       await createPin({ id: pins.length + i + 1 }); // Assuming IDs are sequential and new pins get next ID
     }
+    toast.success(`${pinCount} nye Pins bestilt til systemet`);
   };
 
   const reportMissingShoes = () => {
     console.log(`Reporting shoes of size ${shoeSize} missing`);
     deleteShoeBySize(shoeSize); // Slet sko af den angivne størrelse
+    toast.success(`Sko af størrelse ${shoeSize} er slettet fra systemet`);
   };
 
   const orderNewShoes = () => {
     createShoe({ size: shoeSize });
+    toast.success(`Ny sko af størrelse ${shoeSize} er bestilt til systemet`);
   };
 
   return (
+    <>
+    <Toaster />
     <div style={{ padding: '20px', backgroundColor: '#f5f5f5' }}>
       <h1>Vedligehold</h1>
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
@@ -86,6 +94,7 @@ const Maintenance: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

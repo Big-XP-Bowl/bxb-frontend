@@ -60,7 +60,7 @@ function useShoes() {
             if (error instanceof HttpException) {
                 toast.error(error.message);
             } else {
-                toast.error('En uventet fejl opstod');
+                console.log('En uventet fejl opstod');
             }
         }
     };
