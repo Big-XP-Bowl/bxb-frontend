@@ -10,7 +10,11 @@ const Nav = styled.div<{ menuOpen: boolean }>`
   width: 100%;
   z-index: 1000;
   margin: 0;
-  height: ${({ menuOpen }) => (menuOpen ? "100vh" : "60px")};
+  // here we define the height of the navigation bar depending on vh so that it's only there if the user is on mobile device
+
+  @media (max-width: 768px) {
+    height: ${({ menuOpen }) => (menuOpen ? "100vh" : "60px")};
+  }
   transition: height 0.3s ease;
 
   nav {
